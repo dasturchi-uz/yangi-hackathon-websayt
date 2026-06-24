@@ -1,3 +1,11 @@
+const supabaseUrl = 'https://hadgkmvlazkvhhmuxljg.supabase.co';
+const supabaseKey = 'sb_publishable_vfAvrYTF0mNa2wbIP_O0Xw_y_ME4F3f';
+let supabaseClient;
+
+if (window.supabase) {
+  supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   const phoneInput = document.getElementById('phone');
   if (phoneInput) {
@@ -10,9 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const successStep = document.getElementById('successStep');
   const formStep = document.getElementById('formStep');
   const newRequestBtn = document.getElementById('newRequestBtn');
+  const submitBtn = document.getElementById('submitBtn');
 
   if (form) {
-    form.addEventListener('submit', function (event) {
+    form.addEventListener('submit', async function (event) {
       event.preventDefault();
       const nameField = document.getElementById('nameField');
       const phoneField = document.getElementById('phoneField');
@@ -36,9 +45,41 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      if (formStep && successStep) {
-        formStep.style.display = 'none';
-        successStep.classList.add('show');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient
+            .from('applications')
+            .insert([
+              {
+                full_name: fullName.value.trim(),
+                phone: phone.value.trim(),
+                status: 'new',
+                created_at: new Date().toISOString(),
+                grade: null,
+                notes: null
+              }
+            ])
+            .select();
+
+          if (error) {
+            console.error('Supabase error:', error);
+            window.hitsToast('Xato yuz berdi. Qayta urinib ko\'ring.', 'danger');
+            if (submitBtn) submitBtn.disabled = false;
+            return;
+          }
+        }
+
+        if (formStep && successStep) {
+          formStep.style.display = 'none';
+          successStep.classList.add('show');
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        window.hitsToast('Xato yuz berdi. Qayta urinib ko\'ring.', 'danger');
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     });
   }
