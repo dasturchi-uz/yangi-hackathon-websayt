@@ -1,6 +1,7 @@
 let supabaseClient;
 let allApplications = [];
 let currentFilter = 'all';
+let allClasses = [];
 
 if (window.supabase && window.HITS_CONFIG) {
   supabaseClient = window.supabase.createClient(window.HITS_CONFIG.SUPABASE_URL, window.HITS_CONFIG.SUPABASE_KEY);
@@ -72,20 +73,26 @@ document.addEventListener('DOMContentLoaded', async function () {
     exportBtn.addEventListener('click', exportToCSV);
   }
   
+  // Classes modal logic
+  const manageClassesBtn = document.getElementById('manageClassesBtn');
+  const classesModal = document.getElementById('classesModal');
+  const classesModalCloseBtn = document.getElementById('classesModalCloseBtn');
+  const addClassBtn = document.getElementById('addClassBtn');
+  
+  if (manageClassesBtn && classesModal) {
+    manageClassesBtn.addEventListener('click', () => {
+      classesModal.classList.add('show');
+    });
+    classesModalCloseBtn.addEventListener('click', () => {
+      classesModal.classList.remove('show');
+    });
+    addClassBtn.addEventListener('click', addClass);
+  }
+  
   // Populate grade filter
   const gradeFilter = document.getElementById('gradeFilter');
   if (gradeFilter) {
     gradeFilter.addEventListener('change', renderTable);
-    const baseGrades = ['1-sinf', '2-sinf', '3-sinf', '4-sinf', '5-sinf', '6-sinf', '7-sinf', '8-sinf', '9-sinf', '10-sinf', '11-sinf'];
-    baseGrades.forEach(bg => {
-      ['A', 'B', 'C', 'D'].forEach(sec => {
-        const val = bg.replace('-sinf', `${sec}-sinf`);
-        const opt = document.createElement('option');
-        opt.value = val;
-        opt.textContent = val;
-        gradeFilter.appendChild(opt);
-      });
-    });
   }
 });
 
@@ -114,6 +121,7 @@ async function loadApplications() {
     console.log('✅ Arizalar yuklandi:', data?.length || 0, 'ta');
     
     allApplications = data || [];
+    await loadClasses(); // Fetch classes before render
     updateStatCards();
     renderClassOverview();
     renderTable();
@@ -141,55 +149,107 @@ function updateStatCards() {
   document.getElementById('countRejected').textContent = counts.rejected;
 }
 
+async function loadClasses() {
+  if (!supabaseClient) return;
+  const { data, error } = await supabaseClient.from('classes').select('*').order('name');
+  if (error) {
+    if (error.code === '42P01') {
+      window.hitsToast('SQL bazada "classes" jadvali topilmadi. Avval uni yarating.', 'danger');
+    } else {
+      console.error('Classes load error:', error);
+    }
+    allClasses = [];
+  } else {
+    allClasses = data || [];
+  }
+  
+  const gradeFilter = document.getElementById('gradeFilter');
+  if (gradeFilter) {
+    const currentVal = gradeFilter.value;
+    gradeFilter.innerHTML = '<option value="">Barcha sinflar</option>' + 
+      allClasses.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    gradeFilter.value = currentVal;
+  }
+  renderClassesList();
+}
+
+async function addClass() {
+  const nameInput = document.getElementById('newClassName');
+  const name = nameInput.value.trim();
+  if (!name) return;
+  
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from('classes').insert([{ name }]);
+    if (error) {
+      window.hitsToast('Sinf qo\'shishda xato: ' + error.message, 'danger');
+      return;
+    }
+  }
+  nameInput.value = '';
+  window.hitsToast('Sinf qo\'shildi', 'success');
+  loadClasses();
+}
+
+window.deleteClass = async function(id) {
+  if (!confirm('Sinfni o\'chirasizmi? O\'chirilganda o\'quvchilar ro\'yxatdan yo\'qolmaydi.')) return;
+  if (supabaseClient) {
+    const { error } = await supabaseClient.from('classes').delete().eq('id', id);
+    if (error) {
+      window.hitsToast('O\'chirishda xato', 'danger');
+      return;
+    }
+  }
+  window.hitsToast('O\'chirildi', 'success');
+  loadClasses();
+};
+
+function renderClassesList() {
+  const container = document.getElementById('classesList');
+  if (!container) return;
+  if (allClasses.length === 0) {
+    container.innerHTML = '<div style="color:var(--muted); text-align:center; padding:10px;">Sinflar yo\'q</div>';
+    return;
+  }
+  container.innerHTML = allClasses.map(c => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--paper); border-radius:10px; border:1px solid var(--line);">
+      <strong style="font-size:0.9rem;">${c.name}</strong>
+      <button class="action-btn" title="O'chirish" onclick="deleteClass(${c.id})">🗑️</button>
+    </div>
+  `).join('');
+}
+
 function renderClassOverview() {
   const container = document.getElementById('classOverviewContent');
   if (!container) return;
   
-  const classStats = {};
+  const stats = {};
   allApplications.forEach(app => {
     if (app.status === 'accepted' && app.grade) {
-      const match = app.grade.match(/^(\d+)([A-D])-sinf$/);
-      if (match) {
-        const num = match[1];
-        const sec = match[2];
-        if (!classStats[num]) classStats[num] = { 'A':0, 'B':0, 'C':0, 'D':0 };
-        classStats[num][sec]++;
-      }
+      if (!stats[app.grade]) stats[app.grade] = 0;
+      stats[app.grade]++;
     }
   });
 
-  if (Object.keys(classStats).length === 0) {
+  if (Object.keys(stats).length === 0) {
     container.innerHTML = '<div style="color:var(--muted); font-size:0.9rem;">Hozircha qabul qilingan o\'quvchilar yo\'q.</div>';
     return;
   }
 
-  const html = [];
-  Object.keys(classStats).sort((a, b) => parseInt(a) - parseInt(b)).forEach(num => {
-    const secs = classStats[num];
-    let rowHtml = `<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">`;
-    rowHtml += `<strong style="width:60px;">${num}-sinf:</strong>`;
-    
-    ['A', 'B', 'C', 'D'].forEach(sec => {
-      const count = secs[sec];
-      if (count > 0 || sec === 'A') {
-        const percent = Math.min(100, (count / 20) * 100);
-        const color = count >= 20 ? 'var(--green)' : 'var(--blue)';
-        rowHtml += `
-          <div style="display:flex; align-items:center; gap:6px; font-size:0.85rem; font-family:'JetBrains Mono', monospace;">
-            <span style="font-weight:bold;">${sec}</span>
-            <div style="width:80px; height:8px; background:var(--line); border-radius:4px; overflow:hidden;">
-              <div style="width:${percent}%; height:100%; background:${color};"></div>
-            </div>
-            <span style="color:var(--muted); font-size:0.75rem;">${count}/20 ${count>=20?'✅':''}</span>
-          </div>
-        `;
-      }
-    });
-    rowHtml += `</div>`;
-    html.push(rowHtml);
-  });
-  
-  container.innerHTML = html.join('');
+  container.innerHTML = Object.keys(stats).sort().map(className => {
+    const count = stats[className];
+    const max = 20; 
+    const percent = Math.min(100, (count / max) * 100);
+    const color = count >= max ? 'var(--green)' : 'var(--blue)';
+    return `
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+        <strong style="width:120px; font-size:0.9rem;">${className}:</strong>
+        <div style="width:140px; height:8px; background:var(--line); border-radius:4px; overflow:hidden;">
+          <div style="width:${percent}%; height:100%; background:${color};"></div>
+        </div>
+        <span style="color:var(--muted); font-size:0.8rem; font-family:'JetBrains Mono', monospace;">${count}/${max} ${count>=max?'✅':''}</span>
+      </div>
+    `;
+  }).join('');
 }
 
 function renderTable() {
@@ -273,15 +333,6 @@ async function editApplication(id) {
     {val: 'accepted', lbl: 'Qabul qilindi'},
     {val: 'rejected', lbl: 'Rad etildi'}
   ];
-  const baseGrades = ['1-sinf', '2-sinf', '3-sinf', '4-sinf', '5-sinf', '6-sinf', '7-sinf', '8-sinf', '9-sinf', '10-sinf', '11-sinf'];
-  
-  // Dynamically populate sections (A, B, C, D)
-  const grades = [];
-  baseGrades.forEach(bg => {
-    ['A', 'B', 'C', 'D'].forEach(sec => {
-      grades.push(bg.replace('-sinf', `${sec}-sinf`));
-    });
-  });
 
   modalBody.innerHTML = `
     <div class="detail-row">
@@ -302,7 +353,7 @@ async function editApplication(id) {
       <div class="k">Sinf:</div>
       <select id="editGrade" style="max-width:200px; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;">
         <option value="">Tanlanmagan</option>
-        ${grades.map(g => `<option value="${g}" ${app.grade === g ? 'selected' : ''}>${g}</option>`).join('')}
+        ${allClasses.map(c => `<option value="${c.name}" ${app.grade === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
       </select>
     </div>
     <div class="detail-row">

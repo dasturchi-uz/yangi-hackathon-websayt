@@ -50,6 +50,7 @@
         </div>
       </div>
       <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost-dark btn-sm" id="manageClassesBtn">⚙️ Sinflar</button>
         <button class="btn btn-ghost-dark btn-sm" id="refreshBtn">⟳ Yangilash</button>
         <button class="btn btn-ghost-dark btn-sm" id="exportBtn">⬇ CSV</button>
         <button class="btn btn-sm" style="background:rgba(217,83,79,.18); color:#ff8a86; border:1px solid rgba(217,83,79,.4);" id="logoutBtn">Chiqish</button>
@@ -140,6 +141,25 @@
     <div class="modal-foot">
       <button class="btn btn-outline" id="modalCancelBtn">Yopish</button>
       <button class="btn btn-navy" id="modalSaveBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MANAGE CLASSES MODAL ===================== -->
+<div class="modal-custom" id="classesModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h5 style="font-weight:800;">Sinflarni boshqarish</h5>
+      <button class="modal-close" id="classesModalCloseBtn">✕</button>
+    </div>
+    <div class="modal-body-custom">
+      <div style="display:flex; gap:10px; margin-bottom:16px;">
+        <input type="text" id="newClassName" placeholder="Yangi sinf nomi (masalan: 1A-sinf)" style="flex:1; border-radius:10px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem;">
+        <button class="btn btn-navy" id="addClassBtn">Qo'shish</button>
+      </div>
+      <div id="classesList" style="display:flex; flex-direction:column; gap:8px; max-height:400px; overflow-y:auto;">
+        <!-- Dynamic classes -->
+      </div>
     </div>
   </div>
 </div>
