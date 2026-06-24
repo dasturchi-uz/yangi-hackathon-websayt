@@ -213,7 +213,7 @@ function renderClassesList() {
   container.innerHTML = allClasses.map(c => `
     <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--paper); border-radius:10px; border:1px solid var(--line);">
       <strong style="font-size:0.9rem;">${c.name}</strong>
-      <button class="action-btn" title="O'chirish" onclick="deleteClass(${c.id})">🗑️</button>
+      <button class="action-btn" title="O'chirish" onclick="deleteClass(${c.id})"><i class="bi bi-trash3" style="color:var(--red)"></i></button>
     </div>
   `).join('');
 }
@@ -308,8 +308,8 @@ function renderTable() {
       <td><span class="badge-status badge-${app.status || 'new'}">${statusMap[app.status] || app.status}</span></td>
       <td>${new Date(app.created_at).toLocaleDateString('uz-UZ')}</td>
       <td style="text-align:right;">
-        <button class="action-btn" title="O'zgartirish" onclick="editApplication(${app.id})">✏️</button>
-        <button class="action-btn" title="O'chirish" onclick="deleteApplication(${app.id})">🗑️</button>
+        <button class="action-btn" title="O'zgartirish" onclick="editApplication(${app.id})"><i class="bi bi-pencil-square"></i></button>
+        <button class="action-btn" style="color:var(--red);" title="O'chirish" onclick="deleteApplication(${app.id})"><i class="bi bi-trash3"></i></button>
       </td>
     </tr>
   `).join('');
@@ -342,10 +342,18 @@ async function editApplication(id) {
   ];
 
   modalBody.innerHTML = `
-    <div style="background:rgba(0,0,0,0.02); padding:12px 16px; border-radius:12px; margin-bottom:16px;">
-      <div style="font-size:0.85rem; color:var(--muted); margin-bottom:4px;">O'quvchi ma'lumotlari:</div>
-      <strong style="font-size:1.1rem; display:block;">${app.full_name}</strong>
-      <div style="font-size:0.95rem; font-family:'JetBrains Mono', monospace; margin-top:4px;">📞 ${app.phone}</div>
+    <div style="background:rgba(0,0,0,0.02); padding:14px 16px; border-radius:12px; margin-bottom:16px;">
+      <div style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;"><i class="bi bi-info-circle"></i> O'quvchi ma'lumotlarini tahrirlash:</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div>
+          <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">F.I.SH:</label>
+          <input type="text" id="editFullName" value="${app.full_name || ''}" style="width:100%; border-radius:8px; border:1px solid var(--line); padding:8px 12px; font-size:.95rem; font-weight:600;">
+        </div>
+        <div>
+          <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Telefon raqami:</label>
+          <input type="text" id="editPhone" value="${app.phone || ''}" style="width:100%; border-radius:8px; border:1px solid var(--line); padding:8px 12px; font-size:.95rem; font-family:'JetBrains Mono', monospace;">
+        </div>
+      </div>
     </div>
 
     <div style="margin-bottom:16px;">
@@ -400,6 +408,8 @@ async function editApplication(id) {
   `;
 
   modalSaveBtn.onclick = async function () {
+    const newFullName = document.getElementById('editFullName')?.value.trim() || app.full_name;
+    const newPhone = document.getElementById('editPhone')?.value.trim() || app.phone;
     const newStatus = document.querySelector('input[name="editStatus"]:checked')?.value || app.status;
     const newGrade = document.querySelector('input[name="editGrade"]:checked')?.value || '';
     const newAddress = document.getElementById('editAddress')?.value || '';
@@ -410,6 +420,8 @@ async function editApplication(id) {
       const { error } = await supabaseClient
         .from('applications')
         .update({ 
+          full_name: newFullName,
+          phone: newPhone,
           status: newStatus, 
           grade: newGrade, 
           address: newAddress, 
