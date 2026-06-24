@@ -327,59 +327,83 @@ async function editApplication(id) {
   if (!modal || !modalBody) return;
 
   const statuses = [
-    {val: 'new', lbl: 'Yangi'},
-    {val: 'called', lbl: 'Gaplashildi'},
-    {val: 'no_answer', lbl: 'Ko\'tarmadi'},
-    {val: 'accepted', lbl: 'Qabul qilindi'},
-    {val: 'rejected', lbl: 'Rad etildi'}
+    {val: 'new', lbl: 'Yangi', icon: '🔵'},
+    {val: 'called', lbl: 'Gaplashildi', icon: '📞'},
+    {val: 'no_answer', lbl: 'Ko\'tarmadi', icon: '🔕'},
+    {val: 'accepted', lbl: 'Qabul qilindi', icon: '✅'},
+    {val: 'rejected', lbl: 'Rad etildi', icon: '❌'}
+  ];
+  
+  const transports = [
+    {val: '', lbl: 'Tanlanmagan', icon: '⚪'},
+    {val: 'Yotoqxonada turadi', lbl: 'Yotoqxona', icon: '🛏️'},
+    {val: 'Maktab transportida qatnaydi', lbl: 'Avtobus', icon: '🚌'},
+    {val: 'O\'zi qatnaydi', lbl: 'O\'zi', icon: '🚶'}
   ];
 
   modalBody.innerHTML = `
-    <div class="detail-row">
-      <div class="k">F.I.SH:</div>
-      <div class="v">${app.full_name}</div>
+    <div style="background:rgba(0,0,0,0.02); padding:12px 16px; border-radius:12px; margin-bottom:16px;">
+      <div style="font-size:0.85rem; color:var(--muted); margin-bottom:4px;">O'quvchi ma'lumotlari:</div>
+      <strong style="font-size:1.1rem; display:block;">${app.full_name}</strong>
+      <div style="font-size:0.95rem; font-family:'JetBrains Mono', monospace; margin-top:4px;">📞 ${app.phone}</div>
     </div>
-    <div class="detail-row">
-      <div class="k">Telefon:</div>
-      <div class="v">${app.phone}</div>
+
+    <div style="margin-bottom:16px;">
+      <div class="k" style="margin-bottom:8px; font-weight:700;">Holatni belgilang:</div>
+      <div class="icon-radio-group">
+        ${statuses.map(s => `
+          <label>
+            <input type="radio" name="editStatus" value="${s.val}" class="icon-radio-input" ${app.status === s.val ? 'checked' : ''}>
+            <div class="icon-radio-label"><span>${s.icon}</span> ${s.lbl}</div>
+          </label>
+        `).join('')}
+      </div>
     </div>
-    <div class="detail-row">
-      <div class="k">Holat:</div>
-      <select id="editStatus" style="max-width:200px; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;" onchange="handleStatusChange()">
-        ${statuses.map(s => `<option value="${s.val}" ${app.status === s.val ? 'selected' : ''}>${s.lbl}</option>`).join('')}
-      </select>
+
+    <div style="margin-bottom:16px;">
+      <div class="k" style="margin-bottom:8px; font-weight:700;">Sinfni tanlang:</div>
+      <div class="icon-radio-group">
+        <label>
+          <input type="radio" name="editGrade" value="" class="icon-radio-input" ${!app.grade ? 'checked' : ''}>
+          <div class="icon-radio-label"><span>➖</span> Tanlanmagan</div>
+        </label>
+        ${allClasses.map(c => `
+          <label>
+            <input type="radio" name="editGrade" value="${c.name}" class="icon-radio-input" ${app.grade === c.name ? 'checked' : ''}>
+            <div class="icon-radio-label"><span>🏫</span> ${c.name}</div>
+          </label>
+        `).join('')}
+      </div>
     </div>
-    <div class="detail-row">
-      <div class="k">Sinf:</div>
-      <select id="editGrade" style="max-width:200px; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;">
-        <option value="">Tanlanmagan</option>
-        ${allClasses.map(c => `<option value="${c.name}" ${app.grade === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
-      </select>
+
+    <div style="margin-bottom:16px;">
+      <div class="k" style="margin-bottom:8px; font-weight:700;">Qatnov turi:</div>
+      <div class="icon-radio-group">
+        ${transports.map(t => `
+          <label>
+            <input type="radio" name="editTransport" value="${t.val}" class="icon-radio-input" ${app.transport_type === t.val || (!app.transport_type && t.val === '') ? 'checked' : ''}>
+            <div class="icon-radio-label"><span>${t.icon}</span> ${t.lbl}</div>
+          </label>
+        `).join('')}
+      </div>
     </div>
-    <div class="detail-row">
-      <div class="k">Manzil:</div>
-      <input type="text" id="editAddress" value="${app.address || ''}" placeholder="Tuman, ko'cha, uy..." style="width:100%; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;">
+
+    <div style="margin-bottom:16px;">
+      <div class="k" style="margin-bottom:8px; font-weight:700;">Manzil:</div>
+      <input type="text" id="editAddress" value="${app.address || ''}" placeholder="Tuman, ko'cha, uy..." style="width:100%; border-radius:10px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem;">
     </div>
-    <div class="detail-row">
-      <div class="k">Qatnov turi:</div>
-      <select id="editTransport" style="max-width:200px; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;">
-        <option value="">Tanlanmagan</option>
-        <option value="Yotoqxonada turadi" ${app.transport_type === 'Yotoqxonada turadi' ? 'selected' : ''}>Yotoqxonada turadi</option>
-        <option value="Maktab transportida qatnaydi" ${app.transport_type === 'Maktab transportida qatnaydi' ? 'selected' : ''}>Maktab transportida qatnaydi</option>
-        <option value="O'zi qatnaydi" ${app.transport_type === "O'zi qatnaydi" ? 'selected' : ''}>O'zi qatnaydi</option>
-      </select>
-    </div>
-    <div class="detail-row">
-      <div class="k">Izohlar:</div>
-      <textarea id="editNotes" style="width:100%; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem; min-height:60px;">${app.notes || ''}</textarea>
+
+    <div style="margin-bottom:16px;">
+      <div class="k" style="margin-bottom:8px; font-weight:700;">Izohlar (Qo'shimcha ma'lumotlar):</div>
+      <textarea id="editNotes" placeholder="O'quvchi haqida yoki suhbat xulosasi..." style="width:100%; border-radius:10px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem; min-height:70px;">${app.notes || ''}</textarea>
     </div>
   `;
 
   modalSaveBtn.onclick = async function () {
-    const newStatus = document.getElementById('editStatus')?.value || app.status;
-    const newGrade = document.getElementById('editGrade')?.value || app.grade;
+    const newStatus = document.querySelector('input[name="editStatus"]:checked')?.value || app.status;
+    const newGrade = document.querySelector('input[name="editGrade"]:checked')?.value || '';
     const newAddress = document.getElementById('editAddress')?.value || '';
-    const newTransport = document.getElementById('editTransport')?.value || '';
+    const newTransport = document.querySelector('input[name="editTransport"]:checked')?.value || '';
     const newNotes = document.getElementById('editNotes')?.value || '';
 
     if (supabaseClient) {
