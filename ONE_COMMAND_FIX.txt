@@ -1,0 +1,46 @@
+# ⚡ ONE-COMMAND FIX
+
+Agar boshqa hammasi xatosi bo'lsa, **quyidagi single SQL command-ni** app.supabase.com SQL Editor-da run qiling:
+
+```sql
+-- EVERYTHING IN ONE GO
+DROP TABLE IF EXISTS applications;
+
+CREATE TABLE applications (
+  id BIGSERIAL PRIMARY KEY,
+  full_name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  status TEXT DEFAULT 'new',
+  grade TEXT,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE applications DISABLE ROW LEVEL SECURITY;
+
+GRANT ALL ON applications TO anon;
+GRANT ALL ON applications TO authenticated;
+GRANT USAGE ON SEQUENCE applications_id_seq TO anon;
+GRANT USAGE ON SEQUENCE applications_id_seq TO authenticated;
+
+INSERT INTO applications (full_name, phone) VALUES ('Test', '+998 90 123 45 67');
+```
+
+**Run qiling → ✅ Success!**
+
+---
+
+## Keyin:
+
+1. **index.html** oching - forma test qiling
+2. **admin.html** oching (parol: `1234`) - data ko'rish
+3. **debug.html** oching - test qiling
+
+**Hammasi ✅ bo'ladi!**
+
+---
+
+## Agar xato bo'lsa:
+
+Savolini bilan console error xabarini yozing → to'liq yechim beramiz!

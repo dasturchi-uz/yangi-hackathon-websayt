@@ -66,28 +66,90 @@ GRANT ALL ON applications_id_seq TO anon;
 1. Go to https://app.supabase.com
 2. Open your project
 3. Click "SQL Editor" in the left sidebar
-4. Click "New Query"
-5. Paste the SQL above
-6. Click "Run"
+## Table Creation SQL
 
-## Functionality
+**MUHIM:** Quyidagi SQL-ni **har bir queryni alohida** Run qiling (hammani bir vaqtada paste qilmang):
 
-### Registration Form (index.html)
-- User enters Name and Phone
-- Data is saved to Supabase `applications` table with status `new`
+### Query 1: Jadval yaratish
+```sql
+DROP TABLE IF EXISTS applications CASCADE;
 
-### Admin Panel (admin.html)
-- Password: `1234`
-- View all applications
-- Filter by status (new, called, no_answer, accepted, rejected)
-- Search by name or phone
-- Edit status, grade, and notes
-- Delete applications
-- Export to CSV
+CREATE TABLE applications (
+  id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  full_name VARCHAR(255) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  status VARCHAR(20) DEFAULT 'new' NOT NULL,
+  grade VARCHAR(50),
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-## Status Values
-- `new`: New application
-- `called`: Operator called the student
-- `no_answer`: Student didn't answer
-- `accepted`: Student accepted
-- `rejected`: Application rejected (archive)
+### Query 2: Indexlar yaratish
+```sql
+CREATE INDEX idx_applications_phone ON applications(phone);
+CREATE INDEX idx_applications_status ON applications(status);
+CREATE INDEX idx_applications_created_at ON applications(created_at DESC);
+```
+
+### Query 3: RLS o'chiish (eng oson yechim)
+```sql
+ALTER TABLE applications DISABLE ROW LEVEL SECURITY;
+```
+
+### Query 4: Permissions berish
+```sql
+GRANT SELECT, INSERT, UPDATE, DELETE ON applications TO anon;
+GRANT USAGE ON SEQUENCE applications_id_seq TO anon;
+```
+
+---
+
+## ⚠️ Agar hali xato bo'lsa - alternativ SQL
+
+Agar yuqoridagi SQL xato bersa, quyidagi minimal SQL-ni ishlatib ko'ring:
+
+```sql
+-- Jadval o'chirib yangi yaratish
+DROP TABLE IF EXISTS applications;
+
+-- Yangi jadval
+CREATE TABLE public.applications (
+  id BIGSERIAL PRIMARY KEY,
+  full_name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  status TEXT DEFAULT 'new',
+  grade TEXT,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- RLS o'chirib qo'yish
+ALTER TABLE public.applications DISABLE ROW LEVEL SECURITY;
+
+-- Public access
+GRANT ALL ON public.applications TO public;
+```
+
+---
+
+## 🔍 Yoki Supabase UI orqali yaratish
+
+Agar SQL ishlamasa, Supabase dashboard dan:
+
+1. **Table Editor** → **Create table** tugmasini bosing
+2. **Name**: `applications`
+3. Ustunlarni qo'shing:
+   - `id` (BIGINT, Primary Key)
+   - `full_name` (TEXT)
+   - `phone` (TEXT)
+   - `status` (TEXT, default: 'new')
+   - `grade` (TEXT, nullable)
+   - `notes` (TEXT, nullable)
+   - `created_at` (TIMESTAMP, default: now())
+   - `updated_at` (TIMESTAMP, default: now())
+
+4. **RLS** o'chirib qo'ying (Toggle OFF)
+5. **Create table** bosing
