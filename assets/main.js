@@ -1,6 +1,13 @@
 /* ===================================================================
    HACKATHON IT SCHOOL — shared front-end behaviour
 =================================================================== */
+window.HITS_CONFIG = {
+  SUPABASE_URL: 'https://hadgkmvlazkvhhmuxljg.supabase.co',
+  SUPABASE_KEY: 'sb_publishable_vfAvrYTF0mNa2wbIP_O0Xw_y_ME4F3f',
+  // SHA-256 hash of '1234' is '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'
+  ADMIN_PASSWORD_HASH: '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4'
+};
+
 (function(){
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

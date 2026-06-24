@@ -1,12 +1,10 @@
-const supabaseUrl = 'https://hadgkmvlazkvhhmuxljg.supabase.co';
-const supabaseKey = 'sb_publishable_vfAvrYTF0mNa2wbIP_O0Xw_y_ME4F3f';
 let supabaseClient;
 let allApplications = [];
 let currentFilter = 'all';
 
-if (window.supabase) {
-  supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-  console.log('✅ Supabase initialized:', supabaseUrl);
+if (window.supabase && window.HITS_CONFIG) {
+  supabaseClient = window.supabase.createClient(window.HITS_CONFIG.SUPABASE_URL, window.HITS_CONFIG.SUPABASE_KEY);
+  console.log('✅ Supabase initialized');
 } else {
   console.error('❌ Supabase library not loaded');
 }
@@ -20,15 +18,29 @@ document.addEventListener('DOMContentLoaded', async function () {
   const passwordInput = document.getElementById('adminPasswordInput');
 
   if (loginBtn && loginScreen && adminApp) {
-    loginBtn.addEventListener('click', function () {
-      if (!passwordInput || passwordInput.value.trim() === '1234') {
-        loginScreen.style.display = 'none';
-        adminApp.style.display = 'block';
-        if (loginError) loginError.textContent = '';
-        loadApplications();
-      } else {
-        if (loginError) loginError.textContent = 'Xato parol. Iltimos qayta urinib ko\'ring.';
-      }
+  async function handleLogin() {
+    if (!passwordInput) return;
+    const pwd = passwordInput.value.trim();
+    // Simple SHA-256 hashing for password check
+    const msgBuffer = new TextEncoder().encode(pwd);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    if (hashHex === window.HITS_CONFIG.ADMIN_PASSWORD_HASH) {
+      loginScreen.style.display = 'none';
+      adminApp.style.display = 'block';
+      if (loginError) loginError.textContent = '';
+      loadApplications();
+    } else {
+      if (loginError) loginError.textContent = 'Xato parol. Iltimos qayta urinib ko\'ring.';
+    }
+  }
+
+  if (loginBtn && loginScreen && adminApp) {
+    loginBtn.addEventListener('click', handleLogin);
+    passwordInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') handleLogin();
     });
   }
 
@@ -65,6 +77,22 @@ document.addEventListener('DOMContentLoaded', async function () {
   if (exportBtn) {
     exportBtn.addEventListener('click', exportToCSV);
   }
+  
+  // Populate grade filter
+  const gradeFilter = document.getElementById('gradeFilter');
+  if (gradeFilter) {
+    gradeFilter.addEventListener('change', renderTable);
+    const baseGrades = ['1-sinf', '2-sinf', '3-sinf', '4-sinf', '5-sinf', '6-sinf', '7-sinf', '8-sinf', '9-sinf', '10-sinf', '11-sinf'];
+    baseGrades.forEach(bg => {
+      ['A', 'B', 'C', 'D'].forEach(sec => {
+        const val = bg.replace('-sinf', `${sec}-sinf`);
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        gradeFilter.appendChild(opt);
+      });
+    });
+  }
 });
 
 async function loadApplications() {
@@ -93,6 +121,7 @@ async function loadApplications() {
     
     allApplications = data || [];
     updateStatCards();
+    renderClassOverview();
     renderTable();
   } catch (err) {
     console.error('❌ Xato:', err);
@@ -118,14 +147,71 @@ function updateStatCards() {
   document.getElementById('countRejected').textContent = counts.rejected;
 }
 
+function renderClassOverview() {
+  const container = document.getElementById('classOverviewContent');
+  if (!container) return;
+  
+  const classStats = {};
+  allApplications.forEach(app => {
+    if (app.status === 'accepted' && app.grade) {
+      const match = app.grade.match(/^(\d+)([A-D])-sinf$/);
+      if (match) {
+        const num = match[1];
+        const sec = match[2];
+        if (!classStats[num]) classStats[num] = { 'A':0, 'B':0, 'C':0, 'D':0 };
+        classStats[num][sec]++;
+      }
+    }
+  });
+
+  if (Object.keys(classStats).length === 0) {
+    container.innerHTML = '<div style="color:var(--muted); font-size:0.9rem;">Hozircha qabul qilingan o\'quvchilar yo\'q.</div>';
+    return;
+  }
+
+  const html = [];
+  Object.keys(classStats).sort((a, b) => parseInt(a) - parseInt(b)).forEach(num => {
+    const secs = classStats[num];
+    let rowHtml = `<div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">`;
+    rowHtml += `<strong style="width:60px;">${num}-sinf:</strong>`;
+    
+    ['A', 'B', 'C', 'D'].forEach(sec => {
+      const count = secs[sec];
+      if (count > 0 || sec === 'A') {
+        const percent = Math.min(100, (count / 20) * 100);
+        const color = count >= 20 ? 'var(--green)' : 'var(--blue)';
+        rowHtml += `
+          <div style="display:flex; align-items:center; gap:6px; font-size:0.85rem; font-family:'JetBrains Mono', monospace;">
+            <span style="font-weight:bold;">${sec}</span>
+            <div style="width:80px; height:8px; background:var(--line); border-radius:4px; overflow:hidden;">
+              <div style="width:${percent}%; height:100%; background:${color};"></div>
+            </div>
+            <span style="color:var(--muted); font-size:0.75rem;">${count}/20 ${count>=20?'✅':''}</span>
+          </div>
+        `;
+      }
+    });
+    rowHtml += `</div>`;
+    html.push(rowHtml);
+  });
+  
+  container.innerHTML = html.join('');
+}
+
 function renderTable() {
   const searchInput = document.getElementById('searchInput');
   const searchText = (searchInput?.value || '').toLowerCase();
+  const gradeFilter = document.getElementById('gradeFilter');
+  const filterGrade = gradeFilter ? gradeFilter.value : '';
 
   let filtered = allApplications;
 
   if (currentFilter !== 'all') {
     filtered = filtered.filter(a => a.status === currentFilter);
+  }
+
+  if (filterGrade) {
+    filtered = filtered.filter(a => a.grade === filterGrade);
   }
 
   if (searchText) {
@@ -151,13 +237,21 @@ function renderTable() {
   if (emptyState) emptyState.style.display = 'none';
   if (resultCount) resultCount.textContent = `Topildi: ${filtered.length}`;
 
+  const statusMap = {
+    'new': 'Yangi',
+    'called': 'Gaplashildi',
+    'no_answer': 'Ko\'tarmadi',
+    'accepted': 'Qabul qilindi',
+    'rejected': 'Rad etildi'
+  };
+
   tbody.innerHTML = filtered.map((app, idx) => `
     <tr>
       <td>${idx + 1}</td>
       <td><strong>${app.full_name || '—'}</strong></td>
       <td>${app.phone || '—'}</td>
       <td>${app.grade || '—'}</td>
-      <td><span class="badge-status badge-${app.status || 'new'}">${app.status}</span></td>
+      <td><span class="badge-status badge-${app.status || 'new'}">${statusMap[app.status] || app.status}</span></td>
       <td>${new Date(app.created_at).toLocaleDateString('uz-UZ')}</td>
       <td style="text-align:right;">
         <button class="action-btn" title="O'zgartirish" onclick="editApplication(${app.id})">✏️</button>
@@ -178,8 +272,22 @@ async function editApplication(id) {
 
   if (!modal || !modalBody) return;
 
-  const statuses = ['new', 'called', 'no_answer', 'accepted', 'rejected'];
-  const grades = ['1-sinf', '2-sinf', '3-sinf', '4-sinf', '5-sinf', '6-sinf', '7-sinf', '8-sinf', '9-sinf', '10-sinf', '11-sinf'];
+  const statuses = [
+    {val: 'new', lbl: 'Yangi'},
+    {val: 'called', lbl: 'Gaplashildi'},
+    {val: 'no_answer', lbl: 'Ko\'tarmadi'},
+    {val: 'accepted', lbl: 'Qabul qilindi'},
+    {val: 'rejected', lbl: 'Rad etildi'}
+  ];
+  const baseGrades = ['1-sinf', '2-sinf', '3-sinf', '4-sinf', '5-sinf', '6-sinf', '7-sinf', '8-sinf', '9-sinf', '10-sinf', '11-sinf'];
+  
+  // Dynamically populate sections (A, B, C, D)
+  const grades = [];
+  baseGrades.forEach(bg => {
+    ['A', 'B', 'C', 'D'].forEach(sec => {
+      grades.push(bg.replace('-sinf', `${sec}-sinf`));
+    });
+  });
 
   modalBody.innerHTML = `
     <div class="detail-row">
@@ -192,8 +300,8 @@ async function editApplication(id) {
     </div>
     <div class="detail-row">
       <div class="k">Holat:</div>
-      <select id="editStatus" style="max-width:200px; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;">
-        ${statuses.map(s => `<option value="${s}" ${app.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+      <select id="editStatus" style="max-width:200px; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;" onchange="handleStatusChange()">
+        ${statuses.map(s => `<option value="${s.val}" ${app.status === s.val ? 'selected' : ''}>${s.lbl}</option>`).join('')}
       </select>
     </div>
     <div class="detail-row">

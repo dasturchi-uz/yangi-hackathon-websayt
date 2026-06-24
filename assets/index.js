@@ -1,10 +1,8 @@
-const supabaseUrl = 'https://hadgkmvlazkvhhmuxljg.supabase.co';
-const supabaseKey = 'sb_publishable_vfAvrYTF0mNa2wbIP_O0Xw_y_ME4F3f';
 let supabaseClient;
 
-if (window.supabase) {
-  supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-  console.log('✅ Supabase initialized:', supabaseUrl);
+if (window.supabase && window.HITS_CONFIG) {
+  supabaseClient = window.supabase.createClient(window.HITS_CONFIG.SUPABASE_URL, window.HITS_CONFIG.SUPABASE_KEY);
+  console.log('✅ Supabase initialized');
 } else {
   console.error('❌ Supabase library not loaded');
 }

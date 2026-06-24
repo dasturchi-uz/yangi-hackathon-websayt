@@ -59,6 +59,13 @@
 
   <div class="container admin-main">
 
+    <div id="classOverview" style="background:#fff; border-radius:16px; border:1px solid var(--line); box-shadow:var(--shadow-sm); padding:20px; margin-bottom:16px;">
+      <h3 style="margin-bottom:12px; font-weight:800; font-size:1.1rem;">📊 Sinflar bo'yicha qabul holati</h3>
+      <div id="classOverviewContent" style="display:grid; gap:10px;">
+         <!-- dynamic from admin.js -->
+      </div>
+    </div>
+
     <div class="stat-grid" id="statCards">
       <div class="stat-card active" data-filter="all">
         <span class="sdot" style="background:var(--navy-700)"></span>
@@ -137,7 +144,7 @@
   </div>
 </div>
 
-<script src="assets/main.js"></script>
-<script src="assets/admin.js"></script>
+<script src="assets/main.js" defer></script>
+<script src="assets/admin.js" defer></script>
 </body>
 </html>
