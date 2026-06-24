@@ -6,6 +6,9 @@ let currentFilter = 'all';
 
 if (window.supabase) {
   supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+  console.log('✅ Supabase initialized:', supabaseUrl);
+} else {
+  console.error('❌ Supabase library not loaded');
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -65,26 +68,35 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 async function loadApplications() {
-  if (!supabaseClient) return;
+  if (!supabaseClient) {
+    console.error('❌ Supabase client not initialized');
+    return;
+  }
 
   try {
+    console.log('📥 Arizalar yuklanmoqda...');
+    
     const { data, error } = await supabaseClient
       .from('applications')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Fetch error:', error);
-      window.hitsToast('Ma\'lumotlar yuklanmadi', 'danger');
+      console.error('❌ Fetch xatosi:', error);
+      console.error('Xato kodi:', error.code);
+      console.error('Xato habar:', error.message);
+      window.hitsToast('Ma\'lumotlar yuklanmadi: ' + error.message, 'danger');
       return;
     }
 
+    console.log('✅ Arizalar yuklandi:', data?.length || 0, 'ta');
+    
     allApplications = data || [];
     updateStatCards();
     renderTable();
   } catch (err) {
-    console.error('Error:', err);
-    window.hitsToast('Xato yuz berdi', 'danger');
+    console.error('❌ Xato:', err);
+    window.hitsToast('Xato yuz berdi: ' + err.message, 'danger');
   }
 }
 

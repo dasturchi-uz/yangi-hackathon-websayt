@@ -11,6 +11,10 @@
 Run this SQL in your Supabase dashboard to create the `applications` table:
 
 ```sql
+-- Drop table if exists (only first time setup)
+-- DROP TABLE IF EXISTS applications CASCADE;
+
+-- Create table
 CREATE TABLE applications (
   id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   full_name VARCHAR(255) NOT NULL,
@@ -22,15 +26,40 @@ CREATE TABLE applications (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
--- Create index on phone for faster search
+-- Create indexes for performance
 CREATE INDEX idx_applications_phone ON applications(phone);
-
--- Create index on status for faster filtering
 CREATE INDEX idx_applications_status ON applications(status);
-
--- Create index on created_at for sorting
 CREATE INDEX idx_applications_created_at ON applications(created_at DESC);
+
+-- Enable Row Level Security
+ALTER TABLE applications ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policy: Allow SELECT for everyone (public read)
+CREATE POLICY "Allow public select" ON applications
+  FOR SELECT USING (true);
+
+-- Create RLS policy: Allow INSERT for everyone (public write)
+CREATE POLICY "Allow public insert" ON applications
+  FOR INSERT WITH CHECK (true);
+
+-- Create RLS policy: Allow UPDATE for everyone (public update)
+CREATE POLICY "Allow public update" ON applications
+  FOR UPDATE USING (true) WITH CHECK (true);
+
+-- Create RLS policy: Allow DELETE for everyone (public delete)
+CREATE POLICY "Allow public delete" ON applications
+  FOR DELETE USING (true);
+
+-- Grant permissions to anon user (if needed)
+GRANT ALL ON applications TO anon;
+GRANT ALL ON applications_id_seq TO anon;
 ```
+
+### ⚠️ MUHIM: SQL qadam-qadam
+
+1. Birinchi qator bilan yangi query yarating va **har bir qadam alohida Run qiling**
+2. Yoki hammani bir vaqtada paste qilib Run qiling
+
 
 ## How to Apply SQL
 

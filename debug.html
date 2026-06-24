@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supabase Debug | HACKATHON IT SCHOOL</title>
+<style>
+  body {
+    font-family: monospace;
+    background: #0a1422;
+    color: #fff;
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .container {
+    background: #1c3a5e;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  h1, h2 {
+    color: #f3bf57;
+  }
+  button {
+    background: #e0a02f;
+    color: #0a1422;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  button:hover {
+    background: #f3bf57;
+  }
+  .log {
+    background: #0a1422;
+    border: 1px solid #14a39b;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .success { color: #1f9d55; }
+  .error { color: #ff8a86; }
+  .warning { color: #f3bf57; }
+  .info { color: #8fe3dc; }
+  .form-group {
+    margin: 15px 0;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #f3bf57;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #14a39b;
+    background: #0a1422;
+    color: #fff;
+    box-sizing: border-box;
+  }
+  .status {
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+  }
+  .status.ok { background: rgba(31, 157, 85, 0.2); border: 1px solid #1f9d55; }
+  .status.error { background: rgba(217, 83, 79, 0.2); border: 1px solid #ff8a86; }
+</style>
+</head>
+<body>
+
+<h1>🔧 Supabase Debug Panel</h1>
+
+<div class="container">
+  <h2>1️⃣ Supabase Connection Test</h2>
+  <button onclick="testConnection()">Connection Test</button>
+  <div id="connectionLog" class="log"></div>
+</div>
+
+<div class="container">
+  <h2>2️⃣ Table Existence Check</h2>
+  <button onclick="checkTable()">Check Table</button>
+  <div id="tableLog" class="log"></div>
+</div>
+
+<div class="container">
+  <h2>3️⃣ Insert Test Data</h2>
+  <div class="form-group">
+    <label>Name:</label>
+    <input type="text" id="testName" placeholder="Ism Familiya" value="Test User">
+  </div>
+  <div class="form-group">
+    <label>Phone:</label>
+    <input type="text" id="testPhone" placeholder="+998 XX XXX XX XX" value="+998 90 123 45 67">
+  </div>
+  <button onclick="testInsert()">Test Insert</button>
+  <div id="insertLog" class="log"></div>
+</div>
+
+<div class="container">
+  <h2>4️⃣ Read All Data</h2>
+  <button onclick="testSelect()">Load All Data</button>
+  <div id="selectLog" class="log"></div>
+</div>
+
+<div class="container">
+  <h2>5️⃣ Clear Logs</h2>
+  <button onclick="clearAllLogs()">Clear All Logs</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script>
+const supabaseUrl = 'https://hadgkmvlazkvhhmuxljg.supabase.co';
+const supabaseKey = 'sb_publishable_vfAvrYTF0mNa2wbIP_O0Xw_y_ME4F3f';
+let supabaseClient;
+
+window.addEventListener('load', () => {
+  if (window.supabase) {
+    supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+    log('connectionLog', 'info', '✅ Supabase library loaded');
+  } else {
+    log('connectionLog', 'error', '❌ Supabase library NOT loaded');
+  }
+});
+
+function log(elementId, type, message) {
+  const elem = document.getElementById(elementId);
+  if (!elem) return;
+  const line = `[${new Date().toLocaleTimeString()}] ${message}`;
+  elem.textContent += line + '\n';
+  elem.scrollTop = elem.scrollHeight;
+}
+
+async function testConnection() {
+  const logId = 'connectionLog';
+  document.getElementById(logId).textContent = '';
+  
+  log(logId, 'info', '🔍 Connection test started...');
+  log(logId, 'info', `URL: ${supabaseUrl}`);
+  log(logId, 'info', `Key: ${supabaseKey.substring(0, 20)}...`);
+  
+  if (!supabaseClient) {
+    log(logId, 'error', '❌ Supabase client is NULL');
+    return;
+  }
+  
+  log(logId, 'success', '✅ Supabase client exists');
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('applications')
+      .select('count', { count: 'exact', head: true });
+    
+    if (error) {
+      log(logId, 'error', `❌ Error: ${error.message}`);
+      log(logId, 'error', `Code: ${error.code}`);
+      return;
+    }
+    
+    log(logId, 'success', '✅ Connection successful!');
+    log(logId, 'info', `Row count: ${data?.length || 0}`);
+  } catch (err) {
+    log(logId, 'error', `❌ Exception: ${err.message}`);
+  }
+}
+
+async function checkTable() {
+  const logId = 'tableLog';
+  document.getElementById(logId).textContent = '';
+  
+  log(logId, 'info', '🔍 Checking applications table...');
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('applications')
+      .select('*')
+      .limit(1);
+    
+    if (error) {
+      log(logId, 'error', `❌ Error: ${error.message}`);
+      return;
+    }
+    
+    log(logId, 'success', '✅ Table exists and is accessible');
+    log(logId, 'info', `Schema: ${JSON.stringify(data[0] || {}, null, 2)}`);
+  } catch (err) {
+    log(logId, 'error', `❌ Exception: ${err.message}`);
+  }
+}
+
+async function testInsert() {
+  const logId = 'insertLog';
+  document.getElementById(logId).textContent = '';
+  
+  const name = document.getElementById('testName').value;
+  const phone = document.getElementById('testPhone').value;
+  
+  log(logId, 'info', `📤 Inserting: ${name}, ${phone}`);
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('applications')
+      .insert([{
+        full_name: name,
+        phone: phone,
+        status: 'new'
+      }])
+      .select();
+    
+    if (error) {
+      log(logId, 'error', `❌ Insert error: ${error.message}`);
+      log(logId, 'error', `Code: ${error.code}`);
+      return;
+    }
+    
+    log(logId, 'success', '✅ Insert successful!');
+    log(logId, 'info', `Inserted data: ${JSON.stringify(data, null, 2)}`);
+  } catch (err) {
+    log(logId, 'error', `❌ Exception: ${err.message}`);
+  }
+}
+
+async function testSelect() {
+  const logId = 'selectLog';
+  document.getElementById(logId).textContent = '';
+  
+  log(logId, 'info', '📥 Loading all applications...');
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('applications')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      log(logId, 'error', `❌ Select error: ${error.message}`);
+      return;
+    }
+    
+    log(logId, 'success', `✅ Loaded ${data?.length || 0} records`);
+    log(logId, 'info', JSON.stringify(data, null, 2));
+  } catch (err) {
+    log(logId, 'error', `❌ Exception: ${err.message}`);
+  }
+}
+
+function clearAllLogs() {
+  document.getElementById('connectionLog').textContent = '';
+  document.getElementById('tableLog').textContent = '';
+  document.getElementById('insertLog').textContent = '';
+  document.getElementById('selectLog').textContent = '';
+}
+</script>
+
+</body>
+</html>

@@ -4,7 +4,11 @@ let supabaseClient;
 
 if (window.supabase) {
   supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+  console.log('✅ Supabase initialized:', supabaseUrl);
+} else {
+  console.error('❌ Supabase library not loaded');
 }
+
 
 document.addEventListener('DOMContentLoaded', function () {
   const phoneInput = document.getElementById('phone');
@@ -49,6 +53,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
       try {
         if (supabaseClient) {
+          console.log('📤 Supabasega ma\'lumot yuborilimoqda:', { fullName: fullName.value, phone: phone.value });
+          
           const { data, error } = await supabaseClient
             .from('applications')
             .insert([
@@ -64,11 +70,20 @@ document.addEventListener('DOMContentLoaded', function () {
             .select();
 
           if (error) {
-            console.error('Supabase error:', error);
-            window.hitsToast('Xato yuz berdi. Qayta urinib ko\'ring.', 'danger');
+            console.error('❌ Supabase INSERT xatosi:', error);
+            console.error('Xato kodi:', error.code);
+            console.error('Xato habar:', error.message);
+            window.hitsToast('Xato yuz berdi: ' + error.message, 'danger');
             if (submitBtn) submitBtn.disabled = false;
             return;
           }
+
+          console.log('✅ Ma\'lumot saqlandi:', data);
+        } else {
+          console.error('❌ Supabase client init qilinmagan');
+          window.hitsToast('Veritabaza bilan ulanish xatosi', 'danger');
+          if (submitBtn) submitBtn.disabled = false;
+          return;
         }
 
         if (formStep && successStep) {
@@ -76,8 +91,8 @@ document.addEventListener('DOMContentLoaded', function () {
           successStep.classList.add('show');
         }
       } catch (err) {
-        console.error('Error:', err);
-        window.hitsToast('Xato yuz berdi. Qayta urinib ko\'ring.', 'danger');
+        console.error('❌ Xato:', err);
+        window.hitsToast('Xato yuz berdi: ' + err.message, 'danger');
       } finally {
         if (submitBtn) submitBtn.disabled = false;
       }

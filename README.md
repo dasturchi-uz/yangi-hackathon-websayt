@@ -83,6 +83,28 @@ SQL natijasida yaratiladi:
 - ✅ Real-time updates
 - ✅ Status tracking
 
+## 🔧 Debug va Xatolarni Tuzatish
+
+**Agar ma'lumotlar yozilmayapti yoki ko'rinmayapti:**
+
+1. **debug.html ni ochish** (brauzer bilan)
+   - Supabase bilan ulanishni tekshiradi
+   - Test ma'lumot yuborish mumkin
+
+2. **Console loguruv** (F12 → Console)
+   - ✅ belgilari = muvaffaqiyat
+   - ❌ belgilari = xato
+   - Xato xabarini o'qiy olasiz
+
+3. **Supabase setup tekshirish**
+   - SUPABASE_SETUP.md dagi SQL bari run qilinganmi?
+   - RLS policies yoqolganmi?
+
+4. **Agar hali ham ishlamasa:**
+   - Console xato xabarini ko'rib yozing
+   - app.supabase.com da table bor-bormi tekshiring
+   - Debug.html test tugmalarini bosib, qaysi qadam failga urinsa bilib olasiz
+
 ## 📝 Statuses
 
 - `new` - Yangi ariza
