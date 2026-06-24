@@ -4,8 +4,7 @@
 window.HITS_CONFIG = {
   SUPABASE_URL: 'https://hadgkmvlazkvhhmuxljg.supabase.co',
   SUPABASE_KEY: 'sb_publishable_vfAvrYTF0mNa2wbIP_O0Xw_y_ME4F3f',
-  // SHA-256 hash of 'rishton01'
-  ADMIN_PASSWORD_HASH: '73e7a338977f8bb17bddbcd59c16b118ed80c6a462d3b26fbe3277d6cce0850c'
+  ADMIN_PASSWORD: 'rishton01'
 };
 
 (function(){

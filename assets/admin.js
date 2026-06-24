@@ -17,17 +17,11 @@ document.addEventListener('DOMContentLoaded', async function () {
   const loginError = document.getElementById('loginError');
   const passwordInput = document.getElementById('adminPasswordInput');
 
-  if (loginBtn && loginScreen && adminApp) {
-  async function handleLogin() {
+  function handleLogin() {
     if (!passwordInput) return;
     const pwd = passwordInput.value.trim();
-    // Simple SHA-256 hashing for password check
-    const msgBuffer = new TextEncoder().encode(pwd);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-    if (hashHex === window.HITS_CONFIG.ADMIN_PASSWORD_HASH) {
+    if (pwd === window.HITS_CONFIG.ADMIN_PASSWORD) {
       loginScreen.style.display = 'none';
       adminApp.style.display = 'block';
       if (loginError) loginError.textContent = '';
