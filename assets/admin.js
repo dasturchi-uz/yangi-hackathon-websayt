@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       });
     });
   }
-};
+});
 
 async function loadApplications() {
   if (!supabaseClient) {
