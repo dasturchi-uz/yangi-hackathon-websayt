@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Qabul 2026 | HACKATHON IT SCHOOL</title>
+<meta name="description" content="Hackathon IT School — Farg'ona shahridagi xususiy IT maktabi. 2026-yil qabuli uchun hoziroq ariza qoldiring.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<style>
+  .index-hero{padding:30px 0 70px;}
+  .index-hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:46px; align-items:center; position:relative; z-index:2;}
+  @media (max-width:980px){ .index-hero-grid{grid-template-columns:1fr;} }
+
+  .top-utility{display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:30px;}
+  .about-link{
+    display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.2); border-radius:999px; padding:9px 18px;
+    font-size:.84rem; font-weight:700; color:#fff; text-decoration:none; backdrop-filter:blur(6px); transition:.2s;
+  }
+  .about-link:hover{background:rgba(255,255,255,.16); border-color:rgba(255,255,255,.4);}
+
+  .quick-facts{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px;}
+  .quick-facts .fact{
+    display:flex; align-items:center; gap:9px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12);
+    border-radius:13px; padding:10px 14px; font-size:.84rem; font-weight:600; color:var(--on-dark-muted);
+  }
+  .quick-facts .fact b{color:#fff;}
+
+  .success-step{display:none;}
+  .success-step.show{display:block;}
+
+  .info-row{margin-top:-44px; position:relative; z-index:3;}
+  @media (max-width:768px){ .info-row{margin-top:0;} }
+  .info-card{
+    background:#fff; border-radius:18px; border:1px solid var(--line); padding:20px 22px; height:100%;
+    box-shadow:var(--shadow-md); transition:transform .2s, box-shadow .2s;
+  }
+  .info-card:hover{transform:translateY(-4px);}
+  .info-card h6{font-weight:800; margin-bottom:4px; font-size:.95rem;}
+  .info-card p{font-size:.85rem; color:var(--muted); margin:0;}
+
+  .why-strip{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:30px;}
+  .why-strip span{
+    background:#fff; border:1px solid var(--line); border-radius:999px; padding:9px 17px;
+    font-size:.85rem; font-weight:700; color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<div class="notice-strip"><span class="notice-dot"></span> JOYLAR SONI CHEKLANGAN — 2026-yil qabuli boshlandi</div>
+
+<header class="hero index-hero">
+  <canvas class="hero-canvas"></canvas>
+  <div class="hero-grid-overlay"></div>
+  <div class="container hero-inner">
+
+    <div class="top-utility">
+      <div class="ring-logo-wrap"><img src="assets/logo.png" alt="Hackathon IT School"></div>
+      <a href="about.html#tolov" class="about-link">📋 Oylik to‘lovlar haqida ma'lumot</a>
+    </div>
+
+    <div class="index-hero-grid">
+      <div class="reveal visible">
+        <div class="hero-badge mb-3" style="margin-bottom:16px;">Hackathon IT School · Xususiy maktab</div>
+        <h1 style="margin-bottom:16px;">2026-yil qabul uchun <span class="accent">ariza topshiring</span></h1>
+        <p class="lead-text">Zamonaviy IT yo‘nalishidagi xususiy maktabimizga farzandingizni yozish uchun shaklni to‘ldiring — operatorlarimiz tez orada siz bilan bog‘lanadi.</p>
+
+        <div class="quick-facts">
+          <div class="fact">📅 <b>Qabul yili:</b>&nbsp;2026</div>
+          <div class="fact">📞 <b>Bog‘lanish:</b>&nbsp;+998 50 045 60 10</div>
+          <div class="fact">💻 <b>Yo‘nalish:</b>&nbsp;IT &amp; Texnologiya</div>
+        </div>
+      </div>
+
+      <div class="reveal visible" style="transition-delay:.1s;">
+        <div class="glass-form" id="formCard">
+          <div id="formStep">
+            <h3 class="font-display" style="font-weight:800; margin-bottom:6px;">Qabulga yozilish</h3>
+            <p style="color:var(--muted); font-size:.92rem; margin-bottom:22px;">Ism va telefon raqamingizni qoldiring — qolgan ma'lumotlarni keyinroq operatorimiz bilan birga to‘ldirasiz.</p>
+            <form id="registrationForm" novalidate>
+              <div class="field" id="nameField">
+                <label>O‘quvchining F.I.SH <span class="req">*</span></label>
+                <input type="text" id="fullName" placeholder="Ism Familiya Sharifi" autocomplete="name" required>
+                <div class="err-msg">Ism va familiya majburiy</div>
+              </div>
+              <div class="field" id="phoneField">
+                <label>Telefon raqami <span class="req">*</span></label>
+                <input type="tel" id="phone" placeholder="+998 90 123 45 67" inputmode="tel" autocomplete="tel" required>
+                <div class="err-msg">Telefon raqam majburiy</div>
+              </div>
+              <button type="submit" class="btn btn-gold btn-block btn-lg" id="submitBtn">
+                <span id="submitLabel">Qabulga yozilish</span>
+              </button>
+            </form>
+          </div>
+
+          <div id="successStep" class="success-step text-center" style="padding:14px 0;">
+            <div class="success-burst">
+              <svg viewBox="0 0 84 84">
+                <circle class="ring" cx="42" cy="42" r="36"/>
+                <path class="check" d="M26 43 L37 54 L59 30"/>
+              </svg>
+            </div>
+            <h3 class="font-display" style="font-weight:800; margin-bottom:8px;">Rahmat!</h3>
+            <p style="color:var(--muted); font-size:.92rem; margin-bottom:22px;">Arizangiz muvaffaqiyatli qabul qilindi. Operatorlarimiz tez orada siz bilan bog‘lanib, qolgan ma'lumotlarni aniqlashtiradi.</p>
+            <button class="btn btn-outline btn-block" id="newRequestBtn">Yana ariza qoldirish</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="container info-row reveal-stagger">
+  <div class="grid grid-3col">
+    <div class="reveal" style="--i:0;"><div class="info-card"><h6>⚡ Tez aloqa</h6><p>Ariza qoldirgach, operatorlarimiz 24 soat ichida siz bilan bog‘lanadi.</p></div></div>
+    <div class="reveal" style="--i:1;"><div class="info-card"><h6>📍 Farg‘ona shahri</h6><p>Mustaqillik shoh ko‘chasi, 341-uy — maktab manzilini xaritada ko‘ring.</p></div></div>
+    <div class="reveal" style="--i:2;"><div class="info-card"><h6>🎓 8 IT yo‘nalishi</h6><p>Dasturlash, tarmoq, kiberxavfsizlik va dizayn bo‘yicha amaliy ta'lim.</p></div></div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="section-head reveal" style="margin-inline:auto; text-align:center;">
+    <div class="eyebrow" style="justify-content:center;">Qabul jarayoni</div>
+    <h2 class="section-title">4 ta oddiy bosqich</h2>
+    <p class="section-sub" style="margin-inline:auto;">Arizangizdan tortib maktabga qabul qilinguningizcha bo‘lgan yo‘l shunday ko‘rinadi.</p>
+  </div>
+  <div class="steps reveal-stagger" style="max-width:640px; margin-inline:auto;">
+    <div class="step reveal" style="--i:0;"><div class="step-num">1</div><div class="step-body"><h4>Ariza qoldiring</h4><p>Ism va telefon raqamingizni shu sahifadagi shaklga kiriting.</p></div></div>
+    <div class="step reveal" style="--i:1;"><div class="step-num">2</div><div class="step-body"><h4>Operator qo‘ng‘iroq qiladi</h4><p>1 kun ichida operatorimiz siz bilan bog‘lanib, qolgan ma'lumotlarni aniqlashtiradi.</p></div></div>
+    <div class="step reveal" style="--i:2;"><div class="step-num">3</div><div class="step-body"><h4>Tanishuv va suhbat</h4><p>Maktab bilan tanishasiz, savollaringizga javob olasiz.</p></div></div>
+    <div class="step reveal" style="--i:3;"><div class="step-num">4</div><div class="step-body"><h4>Qabul tasdiqlanadi</h4><p>Joy band qilinadi va o‘quv yiliga tayyorgarlik boshlanadi.</p></div></div>
+  </div>
+</section>
+
+<section class="container reveal">
+  <div class="why-strip">
+    <span>✓ Xalqaro sertifikatlar (IELTS, SAT, CCNA)</span>
+    <span>✓ Xitoy va Kanada bilan hamkorlik</span>
+    <span>✓ Amaliy IT ta'lim</span>
+    <span>✓ Transport va yotoqxona</span>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="f-top">
+      <div class="f-brand">
+        <img src="assets/logo.png" alt="Hackathon IT School">
+        <div>
+          <div class="name">HACKATHON IT SCHOOL</div>
+          <div style="font-size:.82rem; opacity:.65;">Farg'ona shahri · Xususiy maktab</div>
+        </div>
+      </div>
+      <div class="f-col">
+        <h6>Aloqa</h6>
+        <div><a href="tel:+998500456010">+998 50 045 60 10</a></div>
+        <div>Mustaqillik shoh ko‘chasi, 341-uy</div>
+      </div>
+      <div class="f-col">
+        <h6>Havolalar</h6>
+        <div><a href="about.html">Maktab haqida</a></div>
+        <div><a href="about.html#tolov">Oylik to‘lovlar</a></div>
+      </div>
+    </div>
+    <div class="f-bottom">© 2026 HACKATHON IT SCHOOL · Joylar soni cheklangan</div>
+  </div>
+</footer>
+
+<button class="lock-trigger" id="secretAdminLock" title="Admin panel">🔒</button>
+
+<script src="assets/main.js"></script>
+<script src="assets/index.js"></script>
+</body>
+</html>

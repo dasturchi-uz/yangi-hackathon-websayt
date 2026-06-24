@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Admin panel | HACKATHON IT SCHOOL</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<style>
+  body{background:var(--paper);}
+  .admin-main{padding:22px 0 60px;}
+  .stat-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:16px;}
+  @media (max-width:900px){ .stat-grid{grid-template-columns:repeat(3,1fr);} }
+  @media (max-width:520px){ .stat-grid{grid-template-columns:repeat(2,1fr);} }
+  .login-wrap .ring-hint{position:absolute; inset:0; pointer-events:none; opacity:.5;}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN SCREEN ===================== -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card pop-in">
+    <div class="login-logo-wrap"><img src="assets/logo.png" alt="Hackathon IT School"></div>
+    <h2>Admin panel</h2>
+    <span class="login-tag">HITS · Qabul 2026</span>
+    <div class="field">
+      <label>Parol</label>
+      <input type="password" id="adminPasswordInput" placeholder="Parolni kiriting" autofocus autocomplete="current-password">
+    </div>
+    <button class="btn btn-navy btn-block" id="loginBtn">Kirish</button>
+    <div id="loginError" style="color:var(--red); font-size:.82rem; margin-top:10px; font-weight:600; min-height:18px;"></div>
+    <div class="text-center" style="margin-top:22px;">
+      <a href="index.html" style="color:var(--muted); font-size:.84rem; font-weight:600; text-decoration:none;">← Asosiy sahifaga qaytish</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN PANEL ===================== -->
+<div id="adminApp" style="display:none;">
+  <div class="admin-topbar">
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div class="brand-row">
+        <img src="assets/logo.png" alt="Hackathon IT School">
+        <div>
+          <div class="name">HACKATHON IT SCHOOL</div>
+          <div class="sub">ADMIN_PANEL · QABUL_2026</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost-dark btn-sm" id="refreshBtn">⟳ Yangilash</button>
+        <button class="btn btn-ghost-dark btn-sm" id="exportBtn">⬇ CSV</button>
+        <button class="btn btn-sm" style="background:rgba(217,83,79,.18); color:#ff8a86; border:1px solid rgba(217,83,79,.4);" id="logoutBtn">Chiqish</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container admin-main">
+
+    <div class="stat-grid" id="statCards">
+      <div class="stat-card active" data-filter="all">
+        <span class="sdot" style="background:var(--navy-700)"></span>
+        <div class="num" id="countAll">0</div>
+        <div class="lbl">Hammasi</div>
+      </div>
+      <div class="stat-card" data-filter="new">
+        <span class="sdot" style="background:var(--blue)"></span>
+        <div class="num" id="countNew">0</div>
+        <div class="lbl">Yangi arizalar</div>
+      </div>
+      <div class="stat-card" data-filter="called">
+        <span class="sdot" style="background:#a4750f"></span>
+        <div class="num" id="countCalled">0</div>
+        <div class="lbl">Gaplashildi</div>
+      </div>
+      <div class="stat-card" data-filter="no_answer">
+        <span class="sdot" style="background:var(--muted)"></span>
+        <div class="num" id="countNoAnswer">0</div>
+        <div class="lbl">Ko‘tarmadi</div>
+      </div>
+      <div class="stat-card" data-filter="accepted">
+        <span class="sdot" style="background:var(--green)"></span>
+        <div class="num" id="countAccepted">0</div>
+        <div class="lbl">Qabul qilingan</div>
+      </div>
+      <div class="stat-card" data-filter="rejected">
+        <span class="sdot" style="background:var(--red)"></span>
+        <div class="num" id="countRejected">0</div>
+        <div class="lbl">Arxiv (rad etilgan)</div>
+      </div>
+    </div>
+
+    <div class="toolbar" style="margin-bottom:16px;">
+      <input type="text" id="searchInput" placeholder="🔍 Ism yoki telefon raqami bo‘yicha qidirish..." style="flex:1 1 220px;">
+      <select id="gradeFilter" style="max-width:180px;">
+        <option value="">Barcha sinflar</option>
+      </select>
+      <span style="color:var(--muted); font-size:.84rem; margin-left:auto;" id="resultCount"></span>
+    </div>
+
+    <div class="table-custom">
+      <div class="table-scroll">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th><th>F.I.SH</th><th>Telefon</th><th>Sinf</th><th>Holat</th><th>Sana</th><th style="text-align:right;">Amallar</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div id="emptyState" class="empty-state" style="display:none;">
+        <div class="ic">📭</div>
+        <div style="font-weight:700;">Bu bo‘limda hech narsa yo‘q</div>
+        <div style="font-size:.85rem;">Filtrlarni o‘zgartiring yoki yangi arizalarni kuting</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== DETAIL / ACCEPT MODAL (custom) ===================== -->
+<div class="modal-backdrop-custom" id="modalBackdrop"></div>
+<div class="modal-custom" id="detailModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h5 id="modalTitle">Ariza tafsilotlari</h5>
+      <button class="modal-close" id="modalCloseBtn">✕</button>
+    </div>
+    <div class="modal-body-custom" id="modalBody"><!-- filled dynamically --></div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" id="modalCancelBtn">Yopish</button>
+      <button class="btn btn-navy" id="modalSaveBtn">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/main.js"></script>
+<script src="assets/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Maktab haqida | HACKATHON IT SCHOOL</title>
+<meta name="description" content="Hackathon IT School — kelajak kasblariga yo'naltirilgan zamonaviy ta'lim markazi. Ta'lim yo'nalishlari, narxlar, sertifikatlar va manzil.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .page-header{padding:54px 0 86px;}
+  .mission-card{background:#fff; border-radius:var(--radius-xl); border:1px solid var(--line); padding:clamp(26px,5vw,52px); box-shadow:var(--shadow-md);}
+  .mission-card p{font-size:1.08rem; color:var(--ink-soft); line-height:1.8;}
+  .address-card{margin-top:-46px; position:relative; z-index:5;}
+  @media (max-width:768px){ .address-card{margin-top:0;} }
+  .feature-card{background:#fff; border-radius:var(--radius-lg); border:1px solid var(--line); padding:30px; height:100%; transition:.25s;}
+  .feature-card:hover{transform:translateY(-5px); box-shadow:var(--shadow-md);}
+  .feature-card h4{font-weight:800; margin-bottom:6px; font-size:1.1rem;}
+  .feature-list{list-style:none; padding:0; margin:14px 0 0;}
+  .feature-list li{display:flex; align-items:flex-start; gap:10px; padding:8px 0; font-size:.93rem; color:var(--ink-soft); border-bottom:1px solid var(--line-soft);}
+  .feature-list li:last-child{border-bottom:none;}
+  .feature-list li .check{color:var(--teal); font-weight:800; flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="notice-strip"><span class="notice-dot"></span> JOYLAR SONI CHEKLANGAN — 2026-yil qabuli boshlandi · <a href="index.html">Hoziroq yoziling →</a></div>
+
+<nav class="nav-bar">
+  <div class="container nav-inner">
+    <a href="index.html" class="brand"><img src="assets/logo.png" alt="Hackathon IT School" class="brand-logo">HACKATHON <span class="accent">IT</span> SCHOOL</a>
+    <div class="nav-links">
+      <a href="#yonalishlar" class="nav-link">Ta'lim yo'nalishlari</a>
+      <a href="#sertifikat" class="nav-link">Sertifikatlar</a>
+      <a href="#tolov" class="nav-link">Narxlar</a>
+      <a href="#manzil" class="nav-link">Manzil</a>
+    </div>
+    <div class="nav-actions">
+      <a href="index.html" class="btn btn-gold btn-sm">Qabulga yozilish</a>
+      <button class="nav-burger" id="navBurger"><span></span></button>
+    </div>
+  </div>
+  <div class="container nav-mobile" id="navMobile">
+    <a href="#yonalishlar">Ta'lim yo'nalishlari</a>
+    <a href="#sertifikat">Sertifikatlar</a>
+    <a href="#tolov">Narxlar</a>
+    <a href="#manzil">Manzil</a>
+  </div>
+</nav>
+
+<header class="hero page-header">
+  <canvas class="hero-canvas"></canvas>
+  <div class="hero-grid-overlay"></div>
+  <div class="container hero-inner">
+    <div class="ring-logo-wrap mb-4" style="margin-bottom:22px;"><img src="assets/logo.png" alt="Hackathon IT School"></div>
+    <div class="hero-badge mb-3" style="margin-bottom:16px;">Farg'ona shahri · Xususiy maktab</div>
+    <h1 style="max-width:760px; margin-bottom:16px;">Kelajak kasblariga yo'naltirilgan <span class="accent">zamonaviy ta'lim</span> markazi</h1>
+    <p class="lead-text" style="max-width:660px;">Hackathon IT School — o'quvchilarni nafaqat maktab fanlari, balki zamonaviy IT kasblari va xalqaro standartlar asosida tayyorlaydigan ta'lim muassasasi. Har bir o'quvchi umumiy ta'lim bilan bir qatorda kamida bitta zamonaviy kasbni chuqur o'rganadi.</p>
+    <div style="margin-top:26px;"><a href="index.html" class="btn btn-gold btn-lg">Qabulga yozilish</a></div>
+    <div class="hero-stats" style="margin-top:34px;">
+      <div class="pill"><div class="val" data-count="8+">0</div><div class="lbl">Asosiy fan</div></div>
+      <div class="pill"><div class="val" data-count="9">0</div><div class="lbl">IT yo'nalishi</div></div>
+      <div class="pill"><div class="val">IELTS·SAT·CCNA</div><div class="lbl">Xalqaro sertifikatlar</div></div>
+      <div class="pill"><div class="val">Xitoy·Kanada</div><div class="lbl">Xalqaro hamkorlik</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="container">
+  <div class="mission-card reveal">
+    <div class="eyebrow">Bizning maqsadimiz</div>
+    <p style="margin-top:14px;">Maktabimizning asosiy maqsadi — o'quvchilarga sifatli ta'lim berish, ularni xalqaro sertifikatlarga tayyorlash, zamonaviy kasblarni o'rgatish hamda kelajakdagi oliy ta'lim va karyera yo'lida mustahkam poydevor yaratishdir. Ta'lim jarayoni nazariya va amaliyot uyg'unligida olib boriladi — o'quvchilar real loyihalarda ishlaydi, portfolio yaratadi va zamonaviy ish bozoriga tayyorlanadi.</p>
+  </div>
+</section>
+
+<section class="container" id="yonalishlar">
+  <div class="section-head reveal">
+    <div class="eyebrow">Ta'lim yo'nalishlari</div>
+    <h2 class="section-title">Ikki yo'nalishda mustahkam tayyorgarlik</h2>
+    <p class="section-sub">Har bir o'quvchi umumiy ta'lim fanlarini chuqur o'rganadi va shu bilan birga kamida bitta zamonaviy IT kasbini egallaydi.</p>
+  </div>
+
+  <div class="tab-toggle reveal" role="tablist">
+    <button class="active" data-track="general">📘 Asosiy fanlar</button>
+    <button data-track="it">💻 IT va kasbiy ta'lim</button>
+  </div>
+
+  <div class="subject-grid active reveal" data-grid="general" style="margin-top:22px;">
+    <div class="subject-pill"><span class="ic">∑</span> Matematika</div>
+    <div class="subject-pill"><span class="ic">⚛</span> Fizika</div>
+    <div class="subject-pill"><span class="ic">⚗</span> Kimyo</div>
+    <div class="subject-pill"><span class="ic">🧬</span> Biologiya</div>
+    <div class="subject-pill"><span class="ic">📖</span> Ona tili, adabiyot va notiqlik darslari</div>
+    <div class="subject-pill"><span class="ic">🇬🇧</span> Ingliz tili</div>
+    <div class="subject-pill"><span class="ic">🇷🇺</span> Rus tili</div>
+    <div class="subject-pill"><span class="ic">🇨🇳</span> Xitoy tili</div>
+    <div class="subject-pill"><span class="ic">🇰🇷</span> Koreys tili</div>
+  </div>
+
+  <div class="subject-grid it-track reveal" data-grid="it" style="margin-top:22px;">
+    <div class="subject-pill"><span class="ic">🐍</span> Python dasturlash</div>
+    <div class="subject-pill"><span class="ic">🌐</span> Web dasturlash (Laravel)</div>
+    <div class="subject-pill"><span class="ic">📱</span> Mobil dasturlash</div>
+    <div class="subject-pill"><span class="ic">🎯</span> UI/UX dizayn</div>
+    <div class="subject-pill"><span class="ic">🔌</span> Cisco tarmoq texnologiyalari</div>
+    <div class="subject-pill"><span class="ic">🛡️</span> Kiberxavfsizlik</div>
+    <div class="subject-pill"><span class="ic">🎨</span> Grafik dizayn</div>
+    <div class="subject-pill"><span class="ic">💼</span> Freelancing va masofaviy ish</div>
+  </div>
+
+  <div class="track-note reveal">Har bir o'quvchi umumiy ta'lim bilan bir qatorda <strong>kamida bitta zamonaviy kasbni</strong> chuqur o'rganadi.</div>
+</section>
+
+<section class="container" id="sertifikat">
+  <div class="section-head reveal">
+    <div class="eyebrow">Xalqaro sertifikatlarga tayyorgarlik</div>
+    <h2 class="section-title">O'quvchilar quyidagi sertifikatlar uchun tayyorlanadi</h2>
+  </div>
+  <div class="cert-row reveal-stagger">
+    <div class="cert-chip reveal" style="--i:0;">IELTS <small>Ingliz tili</small></div>
+    <div class="cert-chip reveal" style="--i:1;">SAT <small>Oliy ta'limga</small></div>
+    <div class="cert-chip reveal" style="--i:2;">Cisco CCNA <small>Tarmoq texnologiyalari</small></div>
+    <div class="cert-chip reveal" style="--i:3;">IT sertifikatlar <small>Dasturlash bo'yicha</small></div>
+    <div class="cert-chip reveal" style="--i:4;">Til sertifikatlari <small>Xorijiy tillar</small></div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="grid reveal-stagger grid-2col" style="gap:22px;">
+    <div class="feature-card reveal" style="--i:0;">
+      <div class="icon-tile gold">🛠️</div>
+      <h4>Amaliy ta'lim</h4>
+      <p style="color:var(--muted); font-size:.93rem;">Ta'lim jarayoni nazariya va amaliyot uyg'unligida olib boriladi.</p>
+      <ul class="feature-list">
+        <li><span class="check">✓</span> Real loyihalarda ishlash</li>
+        <li><span class="check">✓</span> Portfolio yaratish</li>
+        <li><span class="check">✓</span> Freelancing platformalarida ishlashni o'rganish</li>
+        <li><span class="check">✓</span> Jamoaviy loyihalarda qatnashish</li>
+        <li><span class="check">✓</span> Zamonaviy ish bozoriga tayyorgarlik</li>
+      </ul>
+    </div>
+    <div class="feature-card reveal" style="--i:1;">
+      <div class="icon-tile">🌍</div>
+      <h4>Xalqaro hamkorlik</h4>
+      <p style="color:var(--muted); font-size:.93rem;">Hackathon IT School Xitoy va Kanada universitetlari hamda ta'lim markazlari bilan hamkorlik qiladi.</p>
+      <ul class="feature-list">
+        <li><span class="check">✓</span> Xorijiy universitetlarga tayyorgarlik</li>
+        <li><span class="check">✓</span> Grant va stipendiyalar olish imkoniyati</li>
+        <li><span class="check">✓</span> Xalqaro ta'lim dasturlarida qatnashish</li>
+        <li><span class="check">✓</span> Chet davlatlarda o'qish bo'yicha maslahat va yo'riqnomalar</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="container" id="tolov">
+  <div class="section-head reveal">
+    <div class="eyebrow">O'qish shakllari va to'lov miqdorlari</div>
+    <h2 class="section-title">Har bir oilaga mos shakl</h2>
+  </div>
+  <div class="grid reveal-stagger grid-3col" style="gap:22px;">
+    <div class="reveal" style="--i:0;">
+      <div class="pricing-card">
+        <h5>O'quvchi o'zi qatnaydi</h5>
+        <div class="price">2 350 000 <span>so'm / oy</span></div>
+        <ul>
+          <li>Asosiy fanlar + IT yo'nalishi</li>
+          <li>Tushlik va poldnik</li>
+          <li>Xalqaro sertifikat tayyorgarligi</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reveal" style="--i:1;">
+      <div class="pricing-card featured">
+        <span class="tag">Eng qulay</span>
+        <h5>Maktab transportida qatnaydi</h5>
+        <div class="price">2 500 000 <span>so'm / oy</span></div>
+        <ul>
+          <li>Transport xizmati</li>
+          <li>Asosiy fanlar + IT yo'nalishi</li>
+          <li>Tushlik va poldnik</li>
+          <li>Xalqaro sertifikat tayyorgarligi</li>
+        </ul>
+      </div>
+    </div>
+    <div class="reveal" style="--i:2;">
+      <div class="pricing-card">
+        <h5>Maktab yotoqxonasida yashaydi</h5>
+        <div class="price">3 300 000 <span>so'm / oy</span></div>
+        <ul>
+          <li>To'liq yashash sharoiti</li>
+          <li>4 mahal sifatli ovqatlanish</li>
+          <li>Asosiy fanlar + IT yo'nalishi</li>
+          <li>Xalqaro sertifikat tayyorgarligi</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="section-head reveal">
+    <div class="eyebrow">Ovqatlanish tizimi</div>
+    <h2 class="section-title">Sifatli va to'yimli ovqatlanish</h2>
+  </div>
+  <div class="grid reveal-stagger grid-2col" style="gap:22px;">
+    <div class="reveal" style="--i:0;">
+      <div class="meal-card">
+        <h5>🏠 Uydan qatnaydigan o'quvchilar uchun</h5>
+        <ul>
+          <li>✅ Tushlik (1 mahal issiq ovqat)</li>
+          <li>✅ Poldnik (yengil taom)</li>
+        </ul>
+        <div class="meal-total">Jami: 2 mahal sifatli ovqatlanish</div>
+      </div>
+    </div>
+    <div class="reveal" style="--i:1;">
+      <div class="meal-card">
+        <h5>🛏️ Yotoqxonada yashovchi o'quvchilar uchun</h5>
+        <ul>
+          <li>✅ Nonushta</li>
+          <li>✅ Tushlik (issiq ovqat)</li>
+          <li>✅ Poldnik (yengil taom)</li>
+          <li>✅ Kechki ovqat (issiq ovqat)</li>
+        </ul>
+        <div class="meal-total">Jami: 4 mahal sifatli ovqatlanish</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="section-head reveal">
+    <div class="eyebrow">Nima uchun aynan Hackathon IT School?</div>
+    <h2 class="section-title">Bizni tanlash uchun 10 sabab</h2>
+  </div>
+  <div class="why-grid reveal-stagger">
+    <div class="why-item reveal" style="--i:0;"><span class="check">✓</span> Zamonaviy va qulay o'quv muhiti</div>
+    <div class="why-item reveal" style="--i:1;"><span class="check">✓</span> Kuchli pedagoglar va IT mutaxassislari</div>
+    <div class="why-item reveal" style="--i:2;"><span class="check">✓</span> Xalqaro sertifikatlarga tayyorgarlik</div>
+    <div class="why-item reveal" style="--i:3;"><span class="check">✓</span> Zamonaviy kasb egallash imkoniyati</div>
+    <div class="why-item reveal" style="--i:4;"><span class="check">✓</span> Ingliz, Rus, Xitoy va Koreys tillarini o'rganish</div>
+    <div class="why-item reveal" style="--i:5;"><span class="check">✓</span> Dasturlash va IT yo'nalishlari</div>
+    <div class="why-item reveal" style="--i:6;"><span class="check">✓</span> Freelancing va onlayn daromad ko'nikmalari</div>
+    <div class="why-item reveal" style="--i:7;"><span class="check">✓</span> Xorijiy universitetlarga tayyorlash</div>
+    <div class="why-item reveal" style="--i:8;"><span class="check">✓</span> Grant va stipendiya imkoniyatlari</div>
+    <div class="why-item reveal" style="--i:9;"><span class="check">✓</span> Nazariya va amaliyotni birlashtirgan ta'lim tizimi</div>
+  </div>
+</section>
+
+<section class="container" id="manzil">
+  <div class="section-head reveal">
+    <div class="eyebrow">Hackathon IT School qayerda?</div>
+    <h2 class="section-title">Farg'ona shahri, Mustaqillik shoh ko'chasi, 341-uy</h2>
+  </div>
+
+  <div class="map-toggle tab-toggle reveal" role="tablist" style="margin-bottom:20px;">
+    <button class="active" data-map="yandex">🟡 Yandex Maps</button>
+    <button data-map="google">🔵 Google Maps</button>
+  </div>
+
+  <div class="map-frame-wrap reveal">
+    <div class="map-pane active" data-pane="yandex">
+      <iframe src="https://yandex.uz/map-widget/v1/?ll=71.767729%2C40.355617&z=17&pt=71.767729,40.355617,pm2rdm" allowfullscreen="true" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="HACKATHON IT SCHOOL — Yandex Maps"></iframe>
+    </div>
+    <div class="map-pane" data-pane="google">
+      <iframe src="https://www.google.com/maps?q=40.355617,71.767729&z=17&output=embed" allowfullscreen="true" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="HACKATHON IT SCHOOL — Google Maps"></iframe>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="address-card reveal">
+    <div class="addr-main">
+      <div class="icon-tile">📍</div>
+      <div>
+        <h3>HACKATHON IT SCHOOL</h3>
+        <p>Farg'ona shahri, Mustaqillik shoh ko'chasi, 341-uy</p>
+        <div class="coords">40.355617, 71.767729 <button class="copy-btn" id="copyCoords">Nusxalash</button></div>
+      </div>
+    </div>
+    <div class="addr-actions">
+      <a class="btn-navigate yandex" href="https://yandex.uz/maps/-/CPtd5C5u" target="_blank" rel="noopener">🟡 Yandex Maps</a>
+      <a class="btn-navigate google" href="https://maps.app.goo.gl/wdtZdtqj2kppATNY9?g_st=ic" target="_blank" rel="noopener">🔵 Google Maps</a>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="cta-band reveal">
+    <h2>Hackathon IT School — bugungi bilim, ertangi muvaffaqiyat!</h2>
+    <p>2026-yil qabuli uchun joylar cheklangan. Farzandingiz uchun o'rinni hoziroq band qiling.</p>
+    <a href="index.html" class="btn btn-gold btn-lg">Qabulga yozilish</a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="f-top">
+      <div class="f-brand">
+        <img src="assets/logo.png" alt="Hackathon IT School">
+        <div>
+          <div class="name">HACKATHON IT SCHOOL</div>
+          <div style="font-size:.82rem; opacity:.65;">Farg'ona shahri · Xususiy maktab</div>
+        </div>
+      </div>
+      <div class="f-col">
+        <h6>Aloqa</h6>
+        <div><a href="tel:+998500456010">+998 50 045 60 10</a></div>
+        <div>Mustaqillik shoh ko‘chasi, 341-uy</div>
+      </div>
+      <div class="f-col">
+        <h6>Havolalar</h6>
+        <div><a href="index.html">Qabulga yozilish</a></div>
+        <div><a href="#tolov">Oylik to‘lovlar</a></div>
+      </div>
+    </div>
+    <div class="f-bottom">© 2026 HACKATHON IT SCHOOL · Joylar soni cheklangan</div>
+  </div>
+</footer>
+
+<script src="assets/main.js"></script>
+<script src="assets/about.js"></script>
+</body>
+</html>
