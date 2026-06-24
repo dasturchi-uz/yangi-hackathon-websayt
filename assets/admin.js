@@ -241,7 +241,7 @@ function renderClassOverview() {
     const percent = Math.min(100, (count / max) * 100);
     const color = count >= max ? 'var(--green)' : 'var(--blue)';
     return `
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap; cursor:pointer; padding:6px; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='var(--line)'" onmouseout="this.style.background='transparent'" onclick="document.getElementById('gradeFilter').value='${className}'; document.getElementById('gradeFilter').dispatchEvent(new Event('change')); document.getElementById('tableBody').scrollIntoView({behavior:'smooth'})" title="Shu sinf ro'yxatini ko'rish">
         <strong style="width:120px; font-size:0.9rem;">${className}:</strong>
         <div style="width:140px; height:8px; background:var(--line); border-radius:4px; overflow:hidden;">
           <div style="width:${percent}%; height:100%; background:${color};"></div>
@@ -357,6 +357,19 @@ async function editApplication(id) {
       </select>
     </div>
     <div class="detail-row">
+      <div class="k">Manzil:</div>
+      <input type="text" id="editAddress" value="${app.address || ''}" placeholder="Tuman, ko'cha, uy..." style="width:100%; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;">
+    </div>
+    <div class="detail-row">
+      <div class="k">Qatnov turi:</div>
+      <select id="editTransport" style="max-width:200px; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem;">
+        <option value="">Tanlanmagan</option>
+        <option value="Yotoqxonada turadi" ${app.transport_type === 'Yotoqxonada turadi' ? 'selected' : ''}>Yotoqxonada turadi</option>
+        <option value="Maktab transportida qatnaydi" ${app.transport_type === 'Maktab transportida qatnaydi' ? 'selected' : ''}>Maktab transportida qatnaydi</option>
+        <option value="O'zi qatnaydi" ${app.transport_type === "O'zi qatnaydi" ? 'selected' : ''}>O'zi qatnaydi</option>
+      </select>
+    </div>
+    <div class="detail-row">
       <div class="k">Izohlar:</div>
       <textarea id="editNotes" style="width:100%; border-radius:10px; border:1px solid var(--line); padding:8px; font-size:.9rem; min-height:60px;">${app.notes || ''}</textarea>
     </div>
@@ -365,12 +378,20 @@ async function editApplication(id) {
   modalSaveBtn.onclick = async function () {
     const newStatus = document.getElementById('editStatus')?.value || app.status;
     const newGrade = document.getElementById('editGrade')?.value || app.grade;
+    const newAddress = document.getElementById('editAddress')?.value || '';
+    const newTransport = document.getElementById('editTransport')?.value || '';
     const newNotes = document.getElementById('editNotes')?.value || '';
 
     if (supabaseClient) {
       const { error } = await supabaseClient
         .from('applications')
-        .update({ status: newStatus, grade: newGrade, notes: newNotes })
+        .update({ 
+          status: newStatus, 
+          grade: newGrade, 
+          address: newAddress, 
+          transport_type: newTransport, 
+          notes: newNotes 
+        })
         .eq('id', id);
 
       if (error) {
@@ -425,12 +446,14 @@ function exportToCSV() {
     return;
   }
 
-  const headers = ['ID', 'F.I.SH', 'Telefon', 'Sinf', 'Holat', 'Sana', 'Izohlar'];
+  const headers = ['ID', 'F.I.SH', 'Telefon', 'Sinf', 'Manzil', 'Qatnov', 'Holat', 'Sana', 'Izohlar'];
   const rows = allApplications.map((app, idx) => [
     idx + 1,
     app.full_name,
     app.phone,
     app.grade || '—',
+    app.address || '—',
+    app.transport_type || '—',
     app.status,
     new Date(app.created_at).toLocaleDateString('uz-UZ'),
     app.notes || ''
