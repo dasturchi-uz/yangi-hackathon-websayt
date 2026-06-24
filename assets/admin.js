@@ -327,18 +327,18 @@ async function editApplication(id) {
   if (!modal || !modalBody) return;
 
   const statuses = [
-    {val: 'new', lbl: 'Yangi', icon: '🔵'},
-    {val: 'called', lbl: 'Gaplashildi', icon: '📞'},
-    {val: 'no_answer', lbl: 'Ko\'tarmadi', icon: '🔕'},
-    {val: 'accepted', lbl: 'Qabul qilindi', icon: '✅'},
-    {val: 'rejected', lbl: 'Rad etildi', icon: '❌'}
+    {val: 'new', lbl: 'Yangi', icon: '<i class="bi bi-star-fill" style="color:var(--blue)"></i>'},
+    {val: 'called', lbl: 'Gaplashildi', icon: '<i class="bi bi-telephone-fill" style="color:#a4750f"></i>'},
+    {val: 'no_answer', lbl: 'Ko\'tarmadi', icon: '<i class="bi bi-telephone-x-fill" style="color:var(--muted)"></i>'},
+    {val: 'accepted', lbl: 'Qabul qilindi', icon: '<i class="bi bi-check-circle-fill" style="color:var(--green)"></i>'},
+    {val: 'rejected', lbl: 'Rad etildi', icon: '<i class="bi bi-x-circle-fill" style="color:var(--red)"></i>'}
   ];
   
   const transports = [
-    {val: '', lbl: 'Tanlanmagan', icon: '⚪'},
-    {val: 'Yotoqxonada turadi', lbl: 'Yotoqxona', icon: '🛏️'},
-    {val: 'Maktab transportida qatnaydi', lbl: 'Avtobus', icon: '🚌'},
-    {val: 'O\'zi qatnaydi', lbl: 'O\'zi', icon: '🚶'}
+    {val: '', lbl: 'Tanlanmagan', icon: '<i class="bi bi-dash-circle"></i>'},
+    {val: 'Yotoqxonada turadi', lbl: 'Yotoqxona', icon: '<i class="bi bi-building"></i>'},
+    {val: 'Maktab transportida qatnaydi', lbl: 'Avtobus', icon: '<i class="bi bi-bus-front-fill"></i>'},
+    {val: 'O\'zi qatnaydi', lbl: 'O\'zi', icon: '<i class="bi bi-person-walking"></i>'}
   ];
 
   modalBody.innerHTML = `
@@ -349,53 +349,53 @@ async function editApplication(id) {
     </div>
 
     <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:8px; font-weight:700;">Holatni belgilang:</div>
+      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Holatni belgilang:</div>
       <div class="icon-radio-group">
         ${statuses.map(s => `
           <label>
             <input type="radio" name="editStatus" value="${s.val}" class="icon-radio-input" ${app.status === s.val ? 'checked' : ''}>
-            <div class="icon-radio-label"><span>${s.icon}</span> ${s.lbl}</div>
+            <div class="icon-radio-label">${s.icon} ${s.lbl}</div>
           </label>
         `).join('')}
       </div>
     </div>
 
     <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:8px; font-weight:700;">Sinfni tanlang:</div>
+      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Sinfni tanlang:</div>
       <div class="icon-radio-group">
         <label>
           <input type="radio" name="editGrade" value="" class="icon-radio-input" ${!app.grade ? 'checked' : ''}>
-          <div class="icon-radio-label"><span>➖</span> Tanlanmagan</div>
+          <div class="icon-radio-label"><i class="bi bi-dash-circle"></i> Tanlanmagan</div>
         </label>
         ${allClasses.map(c => `
           <label>
             <input type="radio" name="editGrade" value="${c.name}" class="icon-radio-input" ${app.grade === c.name ? 'checked' : ''}>
-            <div class="icon-radio-label"><span>🏫</span> ${c.name}</div>
+            <div class="icon-radio-label"><i class="bi bi-mortarboard-fill"></i> ${c.name}</div>
           </label>
         `).join('')}
       </div>
     </div>
 
     <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:8px; font-weight:700;">Qatnov turi:</div>
+      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Qatnov turi:</div>
       <div class="icon-radio-group">
         ${transports.map(t => `
           <label>
             <input type="radio" name="editTransport" value="${t.val}" class="icon-radio-input" ${app.transport_type === t.val || (!app.transport_type && t.val === '') ? 'checked' : ''}>
-            <div class="icon-radio-label"><span>${t.icon}</span> ${t.lbl}</div>
+            <div class="icon-radio-label">${t.icon} ${t.lbl}</div>
           </label>
         `).join('')}
       </div>
     </div>
 
     <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:8px; font-weight:700;">Manzil:</div>
-      <input type="text" id="editAddress" value="${app.address || ''}" placeholder="Tuman, ko'cha, uy..." style="width:100%; border-radius:10px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem;">
+      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Manzil:</div>
+      <input type="text" id="editAddress" value="${app.address || ''}" placeholder="Tuman, ko'cha, uy..." style="width:100%; border-radius:8px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem;">
     </div>
 
     <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:8px; font-weight:700;">Izohlar (Qo'shimcha ma'lumotlar):</div>
-      <textarea id="editNotes" placeholder="O'quvchi haqida yoki suhbat xulosasi..." style="width:100%; border-radius:10px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem; min-height:70px;">${app.notes || ''}</textarea>
+      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Izohlar (Qo'shimcha ma'lumotlar):</div>
+      <textarea id="editNotes" placeholder="O'quvchi haqida yoki suhbat xulosasi..." style="width:100%; border-radius:8px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem; min-height:70px;">${app.notes || ''}</textarea>
     </div>
   `;
 
