@@ -24,8 +24,8 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadData() {
+  const content = document.getElementById('studentsContent');
   try {
-    // Ikkala jadvalni bir vaqtda tortish
     const [stdRes, classesRes] = await Promise.all([
       supabaseClient.from('current_students').select('*').order('full_name'),
       supabaseClient.from('classes').select('*').order('name')
@@ -41,10 +41,19 @@ async function loadData() {
     renderStudents();
   } catch (err) {
     console.error("Xatolik:", err);
-    if(err.code === '42P01') {
-       alert("Siz hali 'current_students' jadvalini yaratmagansiz. SQL kodni yurgizing.");
-    } else {
-       alert("Ma'lumotlarni yuklashda xatolik yuz berdi.");
+    let errorMsg = "Ma'lumotlarni yuklashda xatolik yuz berdi.";
+    if (err.code === '42501') {
+      errorMsg = "Supabase da RLS (Row Level Security) yoniq qolgan. Iltimos SQL orqali RLS ni o'chiring.";
+    }
+    
+    if (content) {
+      content.innerHTML = `
+        <div class="alert alert-danger m-4">
+          <h5><i class="icon fas fa-ban"></i> Xatolik!</h5>
+          ${errorMsg} <br><br>
+          <small>Batafsil: ${err.message || err.code}</small>
+        </div>
+      `;
     }
   }
 }
@@ -229,12 +238,21 @@ document.getElementById('stdSaveBtn')?.addEventListener('click', async () => {
   if (id) {
     // Update
     const { error } = await supabaseClient.from('current_students').update(payload).eq('id', id);
-    if (error) { alert("Xatolik: " + error.message); return; }
+    if (error) {
+      if (error.code === '42501') alert("Xatolik: Supabase da ushbu jadval uchun RLS (ruxsat) yopilgan. Iltimos SQL orqali RLS ni o'chiring.");
+      else alert("Xatolik: " + error.message);
+      return;
+    }
     window.hitsToast("Saqlandi!", 'success');
   } else {
     // Insert
     const { error } = await supabaseClient.from('current_students').insert([payload]);
-    if (error) { alert("Xatolik: " + error.message); return; }
+    if (error) {
+      if (error.code === '42P01') alert("Xatolik: 'current_students' jadvali umuman yo'q. Avval uni yarating.");
+      else if (error.code === '42501') alert("Xatolik: Supabase da RLS ruxsati yo'q. Iltimos SQL kodi orqali RLS ni o'chiring.");
+      else alert("Xatolik: " + error.message);
+      return;
+    }
     window.hitsToast("Yangi o'quvchi qo'shildi!", 'success');
   }
 
