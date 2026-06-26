@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const pwd = passwordInput.value.trim();
 
     if (pwd === window.HITS_CONFIG.ADMIN_PASSWORD) {
+      sessionStorage.setItem('hitAdminLogged', 'true');
       loginScreen.style.display = 'none';
       adminApp.style.display = 'block';
       if (loginError) loginError.textContent = '';
@@ -30,6 +31,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     } else {
       if (loginError) loginError.textContent = 'Xato parol. Iltimos qayta urinib ko\'ring.';
     }
+  }
+
+  // Sahifa yuklanganda sessiyani tekshiramiz
+  if (sessionStorage.getItem('hitAdminLogged') === 'true') {
+    if (loginScreen) loginScreen.style.display = 'none';
+    if (adminApp) adminApp.style.display = 'block';
+    loadApplications();
   }
 
   if (loginBtn && loginScreen && adminApp) {
@@ -41,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   if (logoutBtn && loginScreen && adminApp) {
     logoutBtn.addEventListener('click', function () {
+      sessionStorage.removeItem('hitAdminLogged');
       adminApp.style.display = 'none';
       loginScreen.style.display = 'flex';
       if (passwordInput) passwordInput.value = '';
