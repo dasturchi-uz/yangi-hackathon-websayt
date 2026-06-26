@@ -282,6 +282,7 @@ function renderClassesList() {
     container.innerHTML = '<div style="color:var(--muted); text-align:center; padding:10px;">Sinflar yo\'q</div>';
     return;
   }
+  container.innerHTML = allClasses.map(c => `
     <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-light rounded border">
       <strong>${c.name}</strong>
       <button class="btn btn-sm btn-outline-danger" title="O'chirish" onclick="deleteClass(${c.id})"><i class="fas fa-trash-alt"></i></button>
