@@ -17,44 +17,34 @@ async function loadAnalytics() {
     return;
   }
   
-  // Asosiy js dan muhit o'zgaruvchilarini olish
   const supabaseUrl = window.HITS_CONFIG.SUPABASE_URL;
   const supabaseKey = window.HITS_CONFIG.SUPABASE_KEY;
   const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
   try {
-    // Ikkala jadvalni bir vaqtda tortish
     const [appsRes, classesRes] = await Promise.all([
       supabaseClient.from('applications').select('*'),
       supabaseClient.from('classes').select('*')
     ]);
 
     if (appsRes.error) throw appsRes.error;
-    if (classesRes.error && classesRes.error.code !== '42P01') throw classesRes.error; // 42P01 = table not found
+    if (classesRes.error && classesRes.error.code !== '42P01') throw classesRes.error;
 
     allApplications = appsRes.data || [];
     allClasses = classesRes.data || [];
 
-    renderAnalytics();
+    document.getElementById('loadingText').innerText = `Jami ${allApplications.length} ta o'quvchi ma'lumoti tahlil qilindi.`;
+    renderCharts();
   } catch (err) {
     console.error("Xatolik:", err);
     alert("Ma'lumotlarni yuklashda xatolik yuz berdi.");
   }
 }
 
-function renderAnalytics() {
-  // Umumiy statistika
-  const total = allApplications.length;
+function renderCharts() {
   const accepted = allApplications.filter(a => a.status === 'accepted');
-  const rejected = allApplications.filter(a => a.status === 'rejected' || a.status === 'no_answer');
-  const pending = allApplications.filter(a => a.status === 'new' || a.status === 'called');
 
-  document.getElementById('statTotal').innerText = total;
-  document.getElementById('statAccepted').innerText = accepted.length;
-  document.getElementById('statRejected').innerText = rejected.length;
-  document.getElementById('statPending').innerText = pending.length;
-
-  // Logistika statistika (faqat qabul qilinganlar orasidan)
+  // Transport Data
   let dorm = 0, bus = 0, walk = 0, none = 0;
   accepted.forEach(a => {
     if (a.transport_type === 'Yotoqxonada turadi') dorm++;
@@ -63,53 +53,70 @@ function renderAnalytics() {
     else none++;
   });
 
-  document.getElementById('statDorm').innerText = dorm;
-  document.getElementById('statBus').innerText = bus;
-  document.getElementById('statWalk').innerText = walk;
-  document.getElementById('statNone').innerText = none;
-
-  // Sinflar to'ldirilishi
-  const classesGrid = document.getElementById('classesGrid');
-  
-  if (allClasses.length === 0) {
-    classesGrid.innerHTML = `<div style="color:var(--muted); font-size:0.9rem;">Sinflar jadvali hali yaratilmagan. Admin paneldan sinf qo'shing.</div>`;
-    return;
+  const transportCtx = document.getElementById('transportChart');
+  if (transportCtx) {
+    new Chart(transportCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Yotoqxona', 'Avtobus', 'O\'zi qatnaydi', 'Noma\'lum'],
+        datasets: [{
+          data: [dorm, bus, walk, none],
+          backgroundColor: ['#6c757d', '#17a2b8', '#28a745', '#ffc107'],
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+      }
+    });
+    
+    document.getElementById('transportDetails').innerHTML = `
+      <div><i class="fas fa-building text-secondary"></i> Yotoqxona: <b>${dorm}</b></div>
+      <div><i class="fas fa-bus text-info"></i> Avtobus: <b>${bus}</b></div>
+      <div><i class="fas fa-walking text-success"></i> O'zi: <b>${walk}</b></div>
+      <div><i class="fas fa-question text-warning"></i> Noma'lum: <b>${none}</b></div>
+    `;
   }
 
-  // Sinf bo'yicha qabul qilingan o'quvchilar sonini hisoblash
+  // Grade Data
   const classCounts = {};
   allClasses.forEach(c => classCounts[c.name] = 0);
-
+  
   accepted.forEach(a => {
     if (a.grade && classCounts[a.grade] !== undefined) {
       classCounts[a.grade]++;
     }
   });
 
-  classesGrid.innerHTML = allClasses.map(c => {
-    const count = classCounts[c.name];
-    const max = 20;
-    const percent = Math.min(100, (count / max) * 100);
-    const color = count >= max ? 'var(--green)' : 'var(--navy-600)';
+  const gradeLabels = Object.keys(classCounts);
+  const gradeData = Object.values(classCounts);
 
-    return `
-      <div class="class-card">
-        <div class="class-card-header">
-          <div class="class-card-title">${c.name}</div>
-          ${count >= max ? '<i class="bi bi-check-circle-fill" style="color:var(--green);"></i> To\'lgan' : ''}
-        </div>
-        <div class="progress-bg">
-          <div class="progress-fill" style="width: ${percent}%; background: ${color};"></div>
-        </div>
-        <div class="progress-text">
-          <span style="font-family:'JetBrains Mono', monospace; color:${count >= max ? 'var(--green)' : 'var(--ink)'}; font-size:1rem; font-weight:800;">${count}</span> / ${max} o'quvchi
-        </div>
-      </div>
-    `;
-  }).join('');
+  const gradeCtx = document.getElementById('gradeChart');
+  if (gradeCtx) {
+    new Chart(gradeCtx, {
+      type: 'bar',
+      data: {
+        labels: gradeLabels,
+        datasets: [{
+          label: "Qabul qilinganlar soni",
+          data: gradeData,
+          backgroundColor: '#007bff',
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 25 // Assuming 25 is max capacity for a class
+          }
+        }
+      }
+    });
+  }
 }
 
-// Global scriptlar yuklanganidan keyin ishlashi uchun
 window.addEventListener('DOMContentLoaded', () => {
   const interval = setInterval(() => {
     if (window.HITS_CONFIG && window.supabase) {

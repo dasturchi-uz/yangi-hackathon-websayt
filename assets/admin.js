@@ -282,10 +282,9 @@ function renderClassesList() {
     container.innerHTML = '<div style="color:var(--muted); text-align:center; padding:10px;">Sinflar yo\'q</div>';
     return;
   }
-  container.innerHTML = allClasses.map(c => `
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--paper); border-radius:10px; border:1px solid var(--line);">
-      <strong style="font-size:0.9rem;">${c.name}</strong>
-      <button class="action-btn" title="O'chirish" onclick="deleteClass(${c.id})"><i class="bi bi-trash3" style="color:var(--red)"></i></button>
+    <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-light rounded border">
+      <strong>${c.name}</strong>
+      <button class="btn btn-sm btn-outline-danger" title="O'chirish" onclick="deleteClass(${c.id})"><i class="fas fa-trash-alt"></i></button>
     </div>
   `).join('');
 }
@@ -311,14 +310,14 @@ function renderClassOverview() {
     const count = stats[className];
     const max = 20; 
     const percent = Math.min(100, (count / max) * 100);
-    const color = count >= max ? 'var(--green)' : 'var(--blue)';
+    const colorClass = count >= max ? 'bg-success' : 'bg-primary';
     return `
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; flex-wrap:wrap; cursor:pointer; padding:6px; border-radius:8px; transition:background 0.2s;" onmouseover="this.style.background='var(--line)'" onmouseout="this.style.background='transparent'" onclick="document.getElementById('gradeFilter').value='${className}'; document.getElementById('gradeFilter').dispatchEvent(new Event('change')); document.getElementById('tableBody').scrollIntoView({behavior:'smooth'})" title="Shu sinf ro'yxatini ko'rish">
-        <strong style="width:120px; font-size:0.9rem;">${className}:</strong>
-        <div style="width:140px; height:8px; background:var(--line); border-radius:4px; overflow:hidden;">
-          <div style="width:${percent}%; height:100%; background:${color};"></div>
+      <div class="progress-group" style="cursor:pointer;" onclick="document.getElementById('gradeFilter').value='${className}'; document.getElementById('gradeFilter').dispatchEvent(new Event('change')); document.getElementById('tableBody').scrollIntoView({behavior:'smooth'})" title="Shu sinf ro'yxatini ko'rish">
+        <span class="progress-text">${className}</span>
+        <span class="float-right"><b>${count}</b>/${max} ${count>=max?'<i class="fas fa-check text-success"></i>':''}</span>
+        <div class="progress progress-sm">
+          <div class="progress-bar ${colorClass}" style="width: ${percent}%"></div>
         </div>
-        <span style="color:var(--muted); font-size:0.8rem; font-family:'JetBrains Mono', monospace;">${count}/${max} ${count>=max?'✅':''}</span>
       </div>
     `;
   }).join('');
@@ -374,23 +373,31 @@ function renderTable() {
   tbody.innerHTML = filtered.map((app, idx) => {
     const isOld = app.student_type === 'Eski o\'quvchi';
     const typeBadge = isOld 
-      ? `<span style="display:inline-block; margin-top:4px; font-size:0.75rem; background:rgba(34,197,94,0.1); color:var(--green); padding:2px 8px; border-radius:12px; font-weight:700;"><i class="bi bi-person-hearts"></i> Eski o'quvchi</span>`
-      : `<span style="display:inline-block; margin-top:4px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--blue); padding:2px 8px; border-radius:12px; font-weight:700;"><i class="bi bi-person-badge-fill"></i> Yangi o'quvchi</span>`;
+      ? `<span class="badge badge-success mt-1"><i class="fas fa-user-check"></i> Eski o'quvchi</span>`
+      : `<span class="badge badge-primary mt-1"><i class="fas fa-user"></i> Yangi o'quvchi</span>`;
+    
+    const badgeMap = {
+      'new': 'badge-info',
+      'called': 'badge-warning',
+      'no_answer': 'badge-secondary',
+      'accepted': 'badge-success',
+      'rejected': 'badge-danger'
+    };
 
     return `
-    <tr>
+    <tr style="cursor:pointer;" onclick="if(!event.target.closest('button')) editApplication(${app.id})">
       <td>${idx + 1}</td>
       <td>
-        <div style="font-weight:800; color:var(--navy-950);">${app.full_name || '—'}</div>
+        <strong>${app.full_name || '—'}</strong><br>
         ${typeBadge}
       </td>
-      <td>${app.phone || '—'}</td>
+      <td><code>${app.phone || '—'}</code></td>
       <td>${app.grade || '—'}</td>
-      <td><span class="badge-status badge-${app.status || 'new'}">${statusMap[app.status] || app.status}</span></td>
-      <td>${new Date(app.created_at).toLocaleDateString('uz-UZ')}</td>
-      <td style="text-align:right;">
-        <button class="action-btn" title="O'zgartirish" onclick="editApplication(${app.id})"><i class="bi bi-pencil-square"></i></button>
-        <button class="action-btn" style="color:var(--red);" title="O'chirish" onclick="deleteApplication(${app.id})"><i class="bi bi-trash3"></i></button>
+      <td><span class="badge ${badgeMap[app.status] || 'badge-primary'}">${statusMap[app.status] || app.status}</span></td>
+      <td class="text-muted text-sm">${new Date(app.created_at).toLocaleDateString('uz-UZ')}</td>
+      <td class="text-right">
+        <button class="btn btn-sm btn-outline-info" title="O'zgartirish" onclick="editApplication(${app.id})"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm btn-outline-danger" title="O'chirish" onclick="deleteApplication(${app.id})"><i class="fas fa-trash-alt"></i></button>
       </td>
     </tr>
     `;
@@ -409,119 +416,119 @@ async function editApplication(id) {
   if (!modal || !modalBody) return;
 
   const statuses = [
-    {val: 'new', lbl: 'Yangi', icon: '<i class="bi bi-star-fill" style="color:var(--blue)"></i>'},
-    {val: 'called', lbl: 'Gaplashildi', icon: '<i class="bi bi-telephone-fill" style="color:#a4750f"></i>'},
-    {val: 'no_answer', lbl: 'Ko\'tarmadi', icon: '<i class="bi bi-telephone-x-fill" style="color:var(--muted)"></i>'},
-    {val: 'accepted', lbl: 'Qabul qilindi', icon: '<i class="bi bi-check-circle-fill" style="color:var(--green)"></i>'},
-    {val: 'rejected', lbl: 'Rad etildi', icon: '<i class="bi bi-x-circle-fill" style="color:var(--red)"></i>'}
+    {val: 'new', lbl: 'Yangi', icon: '<i class="fas fa-star text-info"></i>'},
+    {val: 'called', lbl: 'Gaplashildi', icon: '<i class="fas fa-phone text-warning"></i>'},
+    {val: 'no_answer', lbl: 'Ko\'tarmadi', icon: '<i class="fas fa-phone-slash text-secondary"></i>'},
+    {val: 'accepted', lbl: 'Qabul qilindi', icon: '<i class="fas fa-check text-success"></i>'},
+    {val: 'rejected', lbl: 'Rad etildi', icon: '<i class="fas fa-times text-danger"></i>'}
   ];
   
   const transports = [
-    {val: '', lbl: 'Tanlanmagan', icon: '<i class="bi bi-dash-circle"></i>'},
-    {val: 'Yotoqxonada turadi', lbl: 'Yotoqxona', icon: '<i class="bi bi-building"></i>'},
-    {val: 'Maktab transportida qatnaydi', lbl: 'Avtobus', icon: '<i class="bi bi-bus-front-fill"></i>'},
-    {val: 'O\'zi qatnaydi', lbl: 'O\'zi', icon: '<i class="bi bi-person-walking"></i>'}
+    {val: '', lbl: 'Tanlanmagan', icon: '<i class="fas fa-minus-circle"></i>'},
+    {val: 'Yotoqxonada turadi', lbl: 'Yotoqxona', icon: '<i class="fas fa-building text-secondary"></i>'},
+    {val: 'Maktab transportida qatnaydi', lbl: 'Avtobus', icon: '<i class="fas fa-bus text-info"></i>'},
+    {val: 'O\'zi qatnaydi', lbl: 'O\'zi', icon: '<i class="fas fa-walking text-success"></i>'}
   ];
 
   const enrollments = [
-    {val: '', lbl: 'Tanlanmagan', icon: '<i class="bi bi-dash-circle"></i>'},
-    {val: 'Sentyabr', lbl: 'Sentyabr', icon: '<i class="bi bi-calendar-event-fill" style="color:#d97706"></i>'},
-    {val: 'Avgust', lbl: 'Avgust', icon: '<i class="bi bi-sun-fill" style="color:#eab308"></i>'},
-    {val: 'Hozir', lbl: 'Hozir', icon: '<i class="bi bi-lightning-fill" style="color:var(--blue)"></i>'}
+    {val: '', lbl: 'Tanlanmagan', icon: '<i class="fas fa-minus-circle"></i>'},
+    {val: 'Sentyabr', lbl: 'Sentyabr', icon: '<i class="fas fa-leaf text-warning"></i>'},
+    {val: 'Avgust', lbl: 'Avgust', icon: '<i class="fas fa-sun text-warning"></i>'},
+    {val: 'Hozir', lbl: 'Hozir', icon: '<i class="fas fa-bolt text-info"></i>'}
   ];
 
   const studentTypes = [
-    {val: 'Yangi o\'quvchi', lbl: 'Yangi o\'quvchi', icon: '<i class="bi bi-person-badge-fill" style="color:var(--blue)"></i>'},
-    {val: 'Eski o\'quvchi', lbl: 'Eski o\'quvchi', icon: '<i class="bi bi-person-hearts" style="color:var(--green)"></i>'}
+    {val: 'Yangi o\'quvchi', lbl: 'Yangi o\'quvchi', icon: '<i class="fas fa-user text-primary"></i>'},
+    {val: 'Eski o\'quvchi', lbl: 'Eski o\'quvchi', icon: '<i class="fas fa-user-check text-success"></i>'}
   ];
 
   modalBody.innerHTML = `
-    <div style="background:rgba(0,0,0,0.02); padding:14px 16px; border-radius:12px; margin-bottom:16px;">
-      <div style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;"><i class="bi bi-info-circle"></i> O'quvchi ma'lumotlarini tahrirlash:</div>
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div>
-          <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">F.I.SH:</label>
-          <input type="text" id="editFullName" value="${app.full_name || ''}" style="width:100%; border-radius:8px; border:1px solid var(--line); padding:8px 12px; font-size:.95rem; font-weight:600;">
+    <div class="alert alert-light border border-info mb-3">
+      <i class="fas fa-info-circle text-info"></i> O'quvchi ma'lumotlarini tahrirlash:
+      <div class="row mt-2">
+        <div class="col-sm-6 form-group">
+          <label>F.I.SH:</label>
+          <input type="text" id="editFullName" value="${app.full_name || ''}" class="form-control font-weight-bold">
         </div>
-        <div>
-          <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Telefon raqami:</label>
-          <input type="text" id="editPhone" value="${app.phone || ''}" style="width:100%; border-radius:8px; border:1px solid var(--line); padding:8px 12px; font-size:.95rem; font-family:'JetBrains Mono', monospace;">
+        <div class="col-sm-6 form-group">
+          <label>Telefon raqami:</label>
+          <input type="text" id="editPhone" value="${app.phone || ''}" class="form-control text-monospace">
         </div>
       </div>
     </div>
 
-    <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">O'quvchi turi:</div>
-      <div class="icon-radio-group">
-        ${studentTypes.map(st => `
-          <label>
-            <input type="radio" name="editStudentType" value="${st.val}" class="icon-radio-input" ${app.student_type === st.val || (!app.student_type && st.val === 'Yangi o\'quvchi') ? 'checked' : ''}>
-            <div class="icon-radio-label">${st.icon} ${st.lbl}</div>
-          </label>
+    <div class="form-group">
+      <label>O'quvchi turi:</label>
+      <div class="d-flex flex-wrap" style="gap:15px;">
+        ${studentTypes.map((st, idx) => `
+          <div class="custom-control custom-radio">
+            <input type="radio" name="editStudentType" id="stType${idx}" value="${st.val}" class="custom-control-input" ${app.student_type === st.val || (!app.student_type && st.val === 'Yangi o\'quvchi') ? 'checked' : ''}>
+            <label for="stType${idx}" class="custom-control-label">${st.icon} ${st.lbl}</label>
+          </div>
         `).join('')}
       </div>
     </div>
 
-    <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Holatni belgilang:</div>
-      <div class="icon-radio-group">
-        ${statuses.map(s => `
-          <label>
-            <input type="radio" name="editStatus" value="${s.val}" class="icon-radio-input" ${app.status === s.val ? 'checked' : ''}>
-            <div class="icon-radio-label">${s.icon} ${s.lbl}</div>
-          </label>
+    <div class="form-group">
+      <label>Holatni belgilang:</label>
+      <div class="d-flex flex-wrap" style="gap:15px;">
+        ${statuses.map((s, idx) => `
+          <div class="custom-control custom-radio">
+            <input type="radio" name="editStatus" id="stStatus${idx}" value="${s.val}" class="custom-control-input" ${app.status === s.val ? 'checked' : ''}>
+            <label for="stStatus${idx}" class="custom-control-label">${s.icon} ${s.lbl}</label>
+          </div>
         `).join('')}
       </div>
     </div>
 
-    <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Sinfni tanlang:</div>
-      <div class="icon-radio-group">
-        <label>
-          <input type="radio" name="editGrade" value="" class="icon-radio-input" ${!app.grade ? 'checked' : ''}>
-          <div class="icon-radio-label"><i class="bi bi-dash-circle"></i> Tanlanmagan</div>
-        </label>
-        ${allClasses.map(c => `
-          <label>
-            <input type="radio" name="editGrade" value="${c.name}" class="icon-radio-input" ${app.grade === c.name ? 'checked' : ''}>
-            <div class="icon-radio-label"><i class="bi bi-mortarboard-fill"></i> ${c.name}</div>
-          </label>
+    <div class="form-group">
+      <label>Sinfni tanlang:</label>
+      <div class="d-flex flex-wrap" style="gap:15px;">
+        <div class="custom-control custom-radio">
+          <input type="radio" name="editGrade" id="stGradeNone" value="" class="custom-control-input" ${!app.grade ? 'checked' : ''}>
+          <label for="stGradeNone" class="custom-control-label"><i class="fas fa-minus-circle text-secondary"></i> Tanlanmagan</label>
+        </div>
+        ${allClasses.map((c, idx) => `
+          <div class="custom-control custom-radio">
+            <input type="radio" name="editGrade" id="stGrade${idx}" value="${c.name}" class="custom-control-input" ${app.grade === c.name ? 'checked' : ''}>
+            <label for="stGrade${idx}" class="custom-control-label"><i class="fas fa-user-graduate text-primary"></i> ${c.name}</label>
+          </div>
         `).join('')}
       </div>
     </div>
 
-    <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Qachon keladi? (O'qishni boshlash vaqti):</div>
-      <div class="icon-radio-group">
-        ${enrollments.map(e => `
-          <label>
-            <input type="radio" name="editEnrollment" value="${e.val}" class="icon-radio-input" ${app.enrollment_month === e.val || (!app.enrollment_month && e.val === '') ? 'checked' : ''}>
-            <div class="icon-radio-label">${e.icon} ${e.lbl}</div>
-          </label>
+    <div class="form-group">
+      <label>Qachon keladi?</label>
+      <div class="d-flex flex-wrap" style="gap:15px;">
+        ${enrollments.map((e, idx) => `
+          <div class="custom-control custom-radio">
+            <input type="radio" name="editEnrollment" id="stEn${idx}" value="${e.val}" class="custom-control-input" ${app.enrollment_month === e.val || (!app.enrollment_month && e.val === '') ? 'checked' : ''}>
+            <label for="stEn${idx}" class="custom-control-label">${e.icon} ${e.lbl}</label>
+          </div>
         `).join('')}
       </div>
     </div>
 
-    <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Qatnov turi:</div>
-      <div class="icon-radio-group">
-        ${transports.map(t => `
-          <label>
-            <input type="radio" name="editTransport" value="${t.val}" class="icon-radio-input" ${app.transport_type === t.val || (!app.transport_type && t.val === '') ? 'checked' : ''}>
-            <div class="icon-radio-label">${t.icon} ${t.lbl}</div>
-          </label>
+    <div class="form-group">
+      <label>Qatnov turi:</label>
+      <div class="d-flex flex-wrap" style="gap:15px;">
+        ${transports.map((t, idx) => `
+          <div class="custom-control custom-radio">
+            <input type="radio" name="editTransport" id="stTr${idx}" value="${t.val}" class="custom-control-input" ${app.transport_type === t.val || (!app.transport_type && t.val === '') ? 'checked' : ''}>
+            <label for="stTr${idx}" class="custom-control-label">${t.icon} ${t.lbl}</label>
+          </div>
         `).join('')}
       </div>
     </div>
 
-    <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Manzil:</div>
-      <input type="text" id="editAddress" value="${app.address || ''}" placeholder="Tuman, ko'cha, uy..." style="width:100%; border-radius:8px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem;">
+    <div class="form-group">
+      <label>Manzil:</label>
+      <input type="text" id="editAddress" value="${app.address || ''}" class="form-control" placeholder="Tuman, ko'cha, uy...">
     </div>
 
-    <div style="margin-bottom:16px;">
-      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Izohlar (Qo'shimcha ma'lumotlar):</div>
-      <textarea id="editNotes" placeholder="O'quvchi haqida yoki suhbat xulosasi..." style="width:100%; border-radius:8px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem; min-height:70px;">${app.notes || ''}</textarea>
+    <div class="form-group">
+      <label>Izohlar:</label>
+      <textarea id="editNotes" class="form-control" rows="3" placeholder="O'quvchi haqida yoki suhbat xulosasi...">${app.notes || ''}</textarea>
     </div>
   `;
 

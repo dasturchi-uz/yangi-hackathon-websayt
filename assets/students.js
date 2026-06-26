@@ -65,10 +65,10 @@ function renderStudents() {
   
   if (currentStudents.length === 0) {
     content.innerHTML = `
-      <div class="empty-state" style="margin-top:30px;">
-        <div class="ic"><i class="bi bi-inbox" style="font-size:2.5rem; color:var(--muted);"></i></div>
-        <div style="font-weight:700;">Hozircha hech kim yo'q</div>
-        <div style="font-size:.85rem;">Maktabning o'quvchilari ushbu ro'yxatda paydo bo'ladi.</div>
+      <div class="text-center p-5 mt-4">
+        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+        <h5>Hozircha hech kim yo'q</h5>
+        <p class="text-muted">Maktabning o'quvchilari ushbu ro'yxatda paydo bo'ladi.</p>
       </div>
     `;
     subtitle.innerText = `Jami: 0 ta o'quvchi`;
@@ -119,7 +119,7 @@ function renderStudents() {
               </thead>
               <tbody>
                 ${students.map((std, idx) => `
-                  <tr>
+                  <tr style="cursor:pointer;" onclick="if(!event.target.closest('button')) editStudent(${std.id})">
                     <td>${idx + 1}</td>
                     <td><strong>${std.full_name}</strong></td>
                     <td><code>${std.phone || '—'}</code></td>

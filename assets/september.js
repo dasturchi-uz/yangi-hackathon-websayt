@@ -65,6 +65,14 @@ function renderSeptemberCards() {
     'rejected': 'Rad etildi'
   };
 
+  const badgeMap = {
+    'new': 'badge-info',
+    'called': 'badge-warning',
+    'no_answer': 'badge-secondary',
+    'accepted': 'badge-success',
+    'rejected': 'badge-danger'
+  };
+
   const createCard = (app, isOld) => {
     const typeLbl = isOld ? '<i class="fas fa-user-check"></i> Eski o\'quvchi' : '<i class="fas fa-user"></i> Yangi o\'quvchi';
     const cardColor = isOld ? 'card-success' : 'card-primary';
@@ -92,6 +100,10 @@ function renderSeptemberCards() {
               <li class="list-group-item d-flex justify-content-between align-items-center">
                 <b>Qatnov</b> 
                 <span class="text-muted">${app.transport_type || '—'}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <b>Holat</b> 
+                <span class="badge ${badgeMap[app.status] || 'badge-primary'}">${statusMap[app.status] || app.status}</span>
               </li>
             </ul>
           </div>
