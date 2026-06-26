@@ -7,158 +7,258 @@
 <link rel="icon" href="assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="assets/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<style>
-  body{background:var(--paper);}
-  .admin-main{padding:22px 0 60px;}
-  .stat-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-bottom:16px;}
-  @media (max-width:900px){ .stat-grid{grid-template-columns:repeat(3,1fr);} }
-  @media (max-width:520px){ .stat-grid{grid-template-columns:repeat(2,1fr);} }
-  .login-wrap .ring-hint{position:absolute; inset:0; pointer-events:none; opacity:.5;}
+<script src="assets/main.js" defer></script>
+
+<style type="text/tailwindcss">
+  @theme {
+    --color-primary: #0f172a;
+    --color-accent: #3b82f6;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
   
+  /* Modals - JS class support */
+  .modal-backdrop-custom {
+    @apply fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300;
+  }
+  .modal-backdrop-custom.show {
+    @apply opacity-100 pointer-events-auto;
+  }
+  .modal-custom {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300 scale-95;
+  }
+  .modal-custom.show {
+    @apply opacity-100 pointer-events-auto scale-100;
+  }
+  .modal-card {
+    @apply bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden border border-slate-200;
+  }
+  .modal-head {
+    @apply flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-white;
+  }
+  .modal-body-custom {
+    @apply p-6 overflow-y-auto bg-slate-50/50 flex flex-col gap-4;
+  }
+  .modal-foot {
+    @apply px-6 py-4 border-t border-slate-100 bg-white flex justify-end gap-3;
+  }
+
+  /* Stat cards styling */
+  .stat-card {
+    @apply flex flex-col bg-white border border-slate-200 rounded-2xl p-5 cursor-pointer hover:-translate-y-1 hover:shadow-lg hover:border-slate-300 transition-all duration-200 relative overflow-hidden;
+  }
+  .stat-card.active {
+    @apply ring-2 ring-blue-500 border-blue-500 bg-blue-50/30;
+  }
+
+  /* Status Badges */
+  .badge-status {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+  }
+  .badge-new { @apply bg-blue-100 text-blue-700; }
+  .badge-called { @apply bg-amber-100 text-amber-700; }
+  .badge-no_answer { @apply bg-slate-200 text-slate-700; }
+  .badge-accepted { @apply bg-emerald-100 text-emerald-700; }
+  .badge-rejected { @apply bg-red-100 text-red-700; }
+
   /* Icon Radio Cards */
-  .icon-radio-group { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+  .icon-radio-group { @apply flex gap-2 flex-wrap mt-1; }
   .icon-radio-label {
-    display:flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--line);
-    border-radius:8px; cursor:pointer; transition:all 0.2s ease; font-size:0.82rem; font-weight:600; background:#fff;
-    color: var(--muted);
+    @apply flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg cursor-pointer transition-all duration-200 text-sm font-semibold bg-white text-slate-500;
   }
-  .icon-radio-label i { font-size: 1rem; }
-  .icon-radio-label:hover { border-color:var(--navy-400); color:var(--ink); }
-  .icon-radio-input { display:none; }
+  .icon-radio-label:hover { @apply border-slate-400 text-slate-800; }
+  .icon-radio-input { @apply hidden; }
   .icon-radio-input:checked + .icon-radio-label {
-    border-color: var(--navy-700); background: var(--navy-700); color: #fff;
-    box-shadow: 0 2px 6px rgba(0,31,63,0.15);
+    @apply border-blue-600 bg-blue-600 text-white shadow-md;
   }
+  .icon-radio-input:checked + .icon-radio-label i {
+    color: white !important;
+  }
+
+  /* Table styling */
+  .admin-table { @apply w-full text-left border-collapse whitespace-nowrap; }
+  .admin-table th { @apply bg-slate-100 text-slate-500 px-4 py-3 text-xs font-bold uppercase tracking-wider border-b border-slate-200; }
+  .admin-table td { @apply px-4 py-4 border-b border-slate-100 text-sm; }
+  .admin-table tbody tr:hover { @apply bg-slate-50; }
+
+  /* Buttons */
+  .btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-200; }
+  .btn-navy { @apply bg-slate-900 text-white hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20; }
+  .btn-outline { @apply bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50; }
+  .action-btn { @apply p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 </style>
 </head>
-<body>
+<body class="flex h-screen overflow-hidden">
 
 <!-- ===================== LOGIN SCREEN ===================== -->
-<div id="loginScreen" class="login-wrap">
-  <div class="login-card pop-in">
-    <div class="login-logo-wrap"><img src="assets/logo1.png" alt="Hackathon IT School"></div>
-    <h2>Admin panel</h2>
-    <span class="login-tag">HITS · Qabul 2026</span>
-    <div class="field">
-      <label>Parol</label>
-      <input type="password" id="adminPasswordInput" placeholder="Parolni kiriting" autofocus autocomplete="current-password">
+<div id="loginScreen" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900">
+  <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+  <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm relative z-10 flex flex-col items-center">
+    <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg shadow-blue-500/30">H</div>
+    <h2 class="text-2xl font-extrabold text-slate-900 mb-1">Admin Panel</h2>
+    <span class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-8">Qabul 2026</span>
+    
+    <div class="w-full mb-6">
+      <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Maxfiy Parol</label>
+      <input type="password" id="adminPasswordInput" placeholder="Parolni kiriting" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium transition-all" autofocus autocomplete="current-password">
     </div>
-    <button class="btn btn-navy btn-block" id="loginBtn">Kirish</button>
-    <div id="loginError" style="color:var(--red); font-size:.82rem; margin-top:10px; font-weight:600; min-height:18px;"></div>
-    <div class="text-center" style="margin-top:22px;">
-      <a href="index.html" style="color:var(--muted); font-size:.84rem; font-weight:600; text-decoration:none;">← Asosiy sahifaga qaytish</a>
-    </div>
+    <button class="btn btn-navy w-full py-3" id="loginBtn">Kirish</button>
+    <div id="loginError" class="text-red-500 text-sm font-semibold mt-4 min-h-[20px]"></div>
   </div>
 </div>
 
-<!-- ===================== ADMIN PANEL ===================== -->
-<div id="adminApp" style="display:none;">
-  <div class="admin-topbar">
-    <div class="container" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-      <div class="brand-row">
-        <img src="assets/logo.png" alt="Hackathon IT School">
-        <div>
-          <div class="name">HACKATHON IT SCHOOL</div>
-          <div class="sub">ADMIN_PANEL · QABUL_2026</div>
+<!-- ===================== ADMIN PANEL (APP) ===================== -->
+<div id="adminApp" class="flex w-full h-full hidden">
+  
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-slate-200 flex flex-col h-full shrink-0 relative z-20">
+    <div class="p-6 flex items-center gap-3 border-b border-slate-100">
+      <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-200">H</div>
+      <div>
+        <h1 class="font-bold text-slate-900 text-sm tracking-wide">HACKATHON IT</h1>
+        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Dashboard</p>
+      </div>
+    </div>
+    <nav class="p-4 flex flex-col gap-2 flex-1 overflow-y-auto">
+      <a href="admin.html" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-xl font-semibold transition-colors"><i class="bi bi-inbox text-lg"></i> Arizalar ro'yxati</a>
+      <a href="students.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-mortarboard text-lg"></i> Joriy O'quvchilar</a>
+      <a href="september.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-calendar-event text-lg"></i> Sentyabr qabuli</a>
+      <a href="analytics.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-pie-chart text-lg"></i> Hisobotlar</a>
+    </nav>
+    <div class="p-4 border-t border-slate-100">
+      <button id="logoutBtn" class="flex items-center gap-3 px-4 py-3 w-full text-red-600 hover:bg-red-50 rounded-xl font-semibold transition-colors"><i class="bi bi-box-arrow-right text-lg"></i> Tizimdan chiqish</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative z-10">
+    
+    <!-- HEADER -->
+    <header class="bg-white border-b border-slate-200 px-8 py-5 flex justify-between items-center shrink-0">
+      <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+        <i class="bi bi-inbox text-blue-600"></i> Barcha Arizalar
+      </h2>
+      <div class="flex gap-2">
+        <button class="btn bg-slate-100 text-slate-700 hover:bg-slate-200" id="manageClassesBtn"><i class="bi bi-gear-fill"></i> Sinflar</button>
+        <button class="btn bg-slate-100 text-slate-700 hover:bg-slate-200" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i> Yangilash</button>
+        <button class="btn bg-slate-100 text-slate-700 hover:bg-slate-200" id="exportBtn"><i class="bi bi-download"></i> CSV</button>
+      </div>
+    </header>
+
+    <!-- CONTENT SCROLL -->
+    <div class="flex-1 overflow-y-auto p-8">
+      
+      <!-- CLASS OVERVIEW -->
+      <div id="classOverview" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+        <h3 class="font-bold text-lg text-slate-800 mb-4 flex items-center gap-2"><i class="bi bi-bar-chart-fill text-blue-600"></i> Sinflar bo'yicha qabul holati</h3>
+        <div id="classOverviewContent" class="grid gap-3">
+           <!-- dynamic from admin.js -->
         </div>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
-        <a href="students.html" class="btn btn-sm" style="background:rgba(16,185,129,.1); color:var(--green); border:1px solid rgba(16,185,129,.2); text-decoration:none;"><i class="bi bi-mortarboard-fill"></i> Joriy o'quvchilar</a>
-        <a href="september.html" class="btn btn-sm" style="background:rgba(217,119,6,.1); color:#d97706; border:1px solid rgba(217,119,6,.2); text-decoration:none;"><i class="bi bi-calendar-event-fill"></i> Sentyabr qabuli</a>
-        <a href="analytics.html" class="btn btn-navy btn-sm" style="text-decoration:none;"><i class="bi bi-pie-chart-fill"></i> Hisobotlar</a>
-        <button class="btn btn-ghost-dark btn-sm" id="manageClassesBtn"><i class="bi bi-gear-fill"></i> Sinflar</button>
-        <button class="btn btn-ghost-dark btn-sm" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i> Yangilash</button>
-        <button class="btn btn-ghost-dark btn-sm" id="exportBtn"><i class="bi bi-download"></i> CSV</button>
-        <button class="btn btn-sm" style="background:rgba(217,83,79,.18); color:#ff8a86; border:1px solid rgba(217,83,79,.4);" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Chiqish</button>
+
+      <!-- STAT CARDS -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6" id="statCards">
+        <div class="stat-card active" data-filter="all">
+          <div class="w-3 h-3 rounded-full bg-slate-900 absolute top-4 right-4"></div>
+          <div class="text-3xl font-extrabold text-slate-900 mb-1" id="countAll">0</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wide">Hammasi</div>
+        </div>
+        <div class="stat-card" data-filter="new">
+          <div class="w-3 h-3 rounded-full bg-blue-500 absolute top-4 right-4 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+          <div class="text-3xl font-extrabold text-slate-900 mb-1" id="countNew">0</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wide">Yangi</div>
+        </div>
+        <div class="stat-card" data-filter="called">
+          <div class="w-3 h-3 rounded-full bg-amber-500 absolute top-4 right-4 shadow-[0_0_8px_rgba(245,158,11,0.6)]"></div>
+          <div class="text-3xl font-extrabold text-slate-900 mb-1" id="countCalled">0</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wide">Gaplashildi</div>
+        </div>
+        <div class="stat-card" data-filter="no_answer">
+          <div class="w-3 h-3 rounded-full bg-slate-400 absolute top-4 right-4 shadow-[0_0_8px_rgba(148,163,184,0.6)]"></div>
+          <div class="text-3xl font-extrabold text-slate-900 mb-1" id="countNoAnswer">0</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wide">Ko'tarmadi</div>
+        </div>
+        <div class="stat-card" data-filter="accepted">
+          <div class="w-3 h-3 rounded-full bg-emerald-500 absolute top-4 right-4 shadow-[0_0_8px_rgba(16,185,129,0.6)]"></div>
+          <div class="text-3xl font-extrabold text-slate-900 mb-1" id="countAccepted">0</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wide">Qabul qilingan</div>
+        </div>
+        <div class="stat-card" data-filter="rejected">
+          <div class="w-3 h-3 rounded-full bg-red-500 absolute top-4 right-4 shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
+          <div class="text-3xl font-extrabold text-slate-900 mb-1" id="countRejected">0</div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wide">Rad etilgan</div>
+        </div>
       </div>
+
+      <!-- TABLE TOOLBAR -->
+      <div class="bg-white p-4 rounded-t-2xl border border-b-0 border-slate-200 flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex gap-4 flex-1 min-w-[300px]">
+          <div class="relative flex-1">
+            <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="searchInput" placeholder="Ism yoki telefon orqali qidiring..." class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium">
+          </div>
+          <select id="gradeFilter" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 w-40">
+            <option value="">Barcha sinflar</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-sm font-bold text-slate-500" id="resultCount"></span>
+          <button class="btn btn-navy" id="addStudentBtn"><i class="bi bi-person-plus-fill"></i> Yangi o'quvchi</button>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="bg-white border border-slate-200 rounded-b-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th class="w-12 text-center">#</th>
+                <th>O'quvchi Ma'lumotlari</th>
+                <th>Telefon</th>
+                <th>Sinf</th>
+                <th>Holat</th>
+                <th>Ariza Sanasi</th>
+                <th class="text-right">Amallar</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        
+        <!-- EMPTY STATE -->
+        <div id="emptyState" class="hidden py-16 flex-col items-center justify-center text-center">
+          <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400 text-3xl">
+            <i class="bi bi-inbox"></i>
+          </div>
+          <h4 class="text-lg font-bold text-slate-900 mb-1">Ma'lumot topilmadi</h4>
+          <p class="text-sm text-slate-500">Filtrlarni o'zgartiring yoki yangi ariza qo'shing.</p>
+        </div>
+      </div>
+
     </div>
-  </div>
-
-  <div class="container admin-main">
-
-    <div id="classOverview" style="background:#fff; border-radius:16px; border:1px solid var(--line); box-shadow:var(--shadow-sm); padding:20px; margin-bottom:16px;">
-      <h3 style="margin-bottom:12px; font-weight:800; font-size:1.1rem;"><i class="bi bi-bar-chart-fill" style="color:var(--navy-700)"></i> Sinflar bo'yicha qabul holati</h3>
-      <div id="classOverviewContent" style="display:grid; gap:10px;">
-         <!-- dynamic from admin.js -->
-      </div>
-    </div>
-
-    <div class="stat-grid" id="statCards">
-      <div class="stat-card active" data-filter="all">
-        <span class="sdot" style="background:var(--navy-700)"></span>
-        <div class="num" id="countAll">0</div>
-        <div class="lbl">Hammasi</div>
-      </div>
-      <div class="stat-card" data-filter="new">
-        <span class="sdot" style="background:var(--blue)"></span>
-        <div class="num" id="countNew">0</div>
-        <div class="lbl">Yangi arizalar</div>
-      </div>
-      <div class="stat-card" data-filter="called">
-        <span class="sdot" style="background:#a4750f"></span>
-        <div class="num" id="countCalled">0</div>
-        <div class="lbl">Gaplashildi</div>
-      </div>
-      <div class="stat-card" data-filter="no_answer">
-        <span class="sdot" style="background:var(--muted)"></span>
-        <div class="num" id="countNoAnswer">0</div>
-        <div class="lbl">Ko‘tarmadi</div>
-      </div>
-      <div class="stat-card" data-filter="accepted">
-        <span class="sdot" style="background:var(--green)"></span>
-        <div class="num" id="countAccepted">0</div>
-        <div class="lbl">Qabul qilingan</div>
-      </div>
-      <div class="stat-card" data-filter="rejected">
-        <span class="sdot" style="background:var(--red)"></span>
-        <div class="num" id="countRejected">0</div>
-        <div class="lbl">Arxiv (rad etilgan)</div>
-      </div>
-    </div>
-
-    <div class="toolbar" style="margin-bottom:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
-      <div style="position:relative; flex:1 1 220px;">
-        <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></i>
-        <input type="text" id="searchInput" placeholder="Ism yoki telefon raqami bo‘yicha qidirish..." style="width:100%; padding-left:36px;">
-      </div>
-      <select id="gradeFilter" style="max-width:180px;">
-        <option value="">Barcha sinflar</option>
-      </select>
-      <button class="btn btn-navy" id="addStudentBtn" style="white-space:nowrap;"><i class="bi bi-person-plus-fill"></i> Yangi o'quvchi</button>
-      <span style="color:var(--muted); font-size:.84rem; margin-left:auto;" id="resultCount"></span>
-    </div>
-
-    <div class="table-custom">
-      <div class="table-scroll">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>#</th><th>F.I.SH</th><th>Telefon</th><th>Sinf</th><th>Holat</th><th>Sana</th><th style="text-align:right;">Amallar</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-      <div id="emptyState" class="empty-state" style="display:none;">
-        <div class="ic"><i class="bi bi-inbox" style="font-size:2.5rem; color:var(--muted);"></i></div>
-        <div style="font-weight:700;">Bu bo‘limda hech narsa yo‘q</div>
-        <div style="font-size:.85rem;">Filtrlarni o‘zgartiring yoki yangi arizalarni kuting</div>
-      </div>
-    </div>
-
-  </div>
+  </main>
 </div>
 
-<!-- ===================== DETAIL / ACCEPT MODAL (custom) ===================== -->
+<!-- ===================== DETAIL / ACCEPT MODAL ===================== -->
 <div class="modal-backdrop-custom" id="modalBackdrop"></div>
 <div class="modal-custom" id="detailModal">
   <div class="modal-card">
     <div class="modal-head">
-      <h5 id="modalTitle"><i class="bi bi-person-lines-fill"></i> Ariza tafsilotlari</h5>
-      <button class="modal-close" id="modalCloseBtn"><i class="bi bi-x-lg"></i></button>
+      <h5 id="modalTitle" class="font-extrabold text-lg flex items-center gap-2"><i class="bi bi-person-lines-fill text-blue-600"></i> Ariza tafsilotlari</h5>
+      <button class="modal-close p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors" id="modalCloseBtn"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="modal-body-custom" id="modalBody"><!-- filled dynamically --></div>
     <div class="modal-foot">
@@ -172,88 +272,93 @@
 <div class="modal-custom" id="classesModal">
   <div class="modal-card">
     <div class="modal-head">
-      <h5 style="font-weight:800;"><i class="bi bi-gear-fill"></i> Sinflarni boshqarish</h5>
-      <button class="modal-close" id="classesModalCloseBtn"><i class="bi bi-x-lg"></i></button>
+      <h5 class="font-extrabold text-lg flex items-center gap-2"><i class="bi bi-gear-fill text-blue-600"></i> Sinflarni boshqarish</h5>
+      <button class="modal-close p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors" id="classesModalCloseBtn"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="modal-body-custom">
-      <div style="display:flex; gap:10px; margin-bottom:16px;">
-        <input type="text" id="newClassName" placeholder="Yangi sinf nomi (masalan: 1A-sinf)" style="flex:1; border-radius:10px; border:1px solid var(--line); padding:10px 14px; font-size:.9rem;">
+      <div class="flex gap-3">
+        <input type="text" id="newClassName" placeholder="Yangi sinf nomi (masalan: 1A-sinf)" class="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
         <button class="btn btn-navy" id="addClassBtn">Qo'shish</button>
       </div>
-      <div id="classesList" style="display:flex; flex-direction:column; gap:8px; max-height:400px; overflow-y:auto;">
+      <div id="classesList" class="flex flex-col gap-2 max-h-64 overflow-y-auto mt-2">
         <!-- Dynamic classes -->
       </div>
     </div>
   </div>
 </div>
 
-<!-- Add Student Modal -->
+<!-- ===================== ADD STUDENT MODAL ===================== -->
 <div class="modal-custom" id="addStudentModal">
   <div class="modal-card">
     <div class="modal-head">
-      <h5 style="font-weight:800;"><i class="bi bi-person-plus-fill" style="color:var(--navy-600);"></i> Yangi o'quvchi qo'shish</h5>
-      <button class="modal-close" id="addStudentCloseBtn"><i class="bi bi-x-lg"></i></button>
+      <h5 class="font-extrabold text-lg flex items-center gap-2"><i class="bi bi-person-plus-fill text-blue-600"></i> Yangi o'quvchi qo'shish</h5>
+      <button class="modal-close p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors" id="addStudentCloseBtn"><i class="bi bi-x-lg"></i></button>
     </div>
     <div class="modal-body-custom">
-      <div style="margin-bottom:16px;">
-        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">F.I.SH:</label>
-        <input type="text" id="addFullName" placeholder="O'quvchining to'liq ismi..." style="width:100%; border-radius:8px; border:1px solid var(--line); padding:10px 14px; font-size:.95rem; font-weight:600;">
+      
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">F.I.SH:</label>
+        <input type="text" id="addFullName" placeholder="O'quvchining to'liq ismi..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
       </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Telefon raqami:</label>
-        <input type="text" id="addPhone" placeholder="+998 90 123 45 67" style="width:100%; border-radius:8px; border:1px solid var(--line); padding:10px 14px; font-size:.95rem; font-family:'JetBrains Mono', monospace;">
+      
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Telefon raqami:</label>
+        <input type="text" id="addPhone" placeholder="+998 90 123 45 67" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none">
       </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">O'quvchi turi:</label>
+      
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">O'quvchi turi:</label>
         <div class="icon-radio-group">
           <label>
             <input type="radio" name="addStudentType" value="Yangi o'quvchi" class="icon-radio-input" checked>
-            <div class="icon-radio-label"><i class="bi bi-person-badge-fill" style="color:var(--blue)"></i> Yangi o'quvchi</div>
+            <div class="icon-radio-label"><i class="bi bi-person-badge-fill text-blue-500"></i> Yangi o'quvchi</div>
           </label>
           <label>
             <input type="radio" name="addStudentType" value="Eski o'quvchi" class="icon-radio-input">
-            <div class="icon-radio-label"><i class="bi bi-person-hearts" style="color:var(--green)"></i> Eski o'quvchi</div>
+            <div class="icon-radio-label"><i class="bi bi-person-hearts text-emerald-500"></i> Eski o'quvchi</div>
           </label>
         </div>
       </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Qachon keladi?</label>
+      
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Qachon keladi?</label>
         <div class="icon-radio-group">
           <label>
             <input type="radio" name="addEnrollment" value="Sentyabr" class="icon-radio-input">
-            <div class="icon-radio-label"><i class="bi bi-calendar-event-fill" style="color:#d97706"></i> Sentyabr</div>
+            <div class="icon-radio-label"><i class="bi bi-calendar-event-fill text-amber-500"></i> Sentyabr</div>
           </label>
           <label>
             <input type="radio" name="addEnrollment" value="Avgust" class="icon-radio-input">
-            <div class="icon-radio-label"><i class="bi bi-sun-fill" style="color:#eab308"></i> Avgust</div>
+            <div class="icon-radio-label"><i class="bi bi-sun-fill text-yellow-500"></i> Avgust</div>
           </label>
           <label>
             <input type="radio" name="addEnrollment" value="Hozir" class="icon-radio-input" checked>
-            <div class="icon-radio-label"><i class="bi bi-lightning-fill" style="color:var(--blue)"></i> Hozir</div>
+            <div class="icon-radio-label"><i class="bi bi-lightning-fill text-blue-500"></i> Hozir</div>
           </label>
         </div>
       </div>
-      <div style="margin-bottom:16px;">
-        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Holati:</label>
+      
+      <div>
+        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Holati:</label>
         <div class="icon-radio-group">
           <label>
             <input type="radio" name="addStatus" value="new" class="icon-radio-input" checked>
-            <div class="icon-radio-label"><i class="bi bi-star-fill" style="color:var(--blue)"></i> Yangi</div>
+            <div class="icon-radio-label"><i class="bi bi-star-fill text-blue-500"></i> Yangi</div>
           </label>
           <label>
             <input type="radio" name="addStatus" value="accepted" class="icon-radio-input">
-            <div class="icon-radio-label"><i class="bi bi-check-circle-fill" style="color:var(--green)"></i> Qabul qilindi</div>
+            <div class="icon-radio-label"><i class="bi bi-check-circle-fill text-emerald-500"></i> Qabul qilindi</div>
           </label>
         </div>
       </div>
+
     </div>
     <div class="modal-foot">
-      <button class="btn btn-navy" id="addStudentSaveBtn" style="width:100%;">Qo'shish</button>
+      <button class="btn btn-navy w-full py-3" id="addStudentSaveBtn">Saqlash</button>
     </div>
   </div>
 </div>
 
-<script src="assets/main.js" defer></script>
 <script src="assets/admin.js" defer></script>
 </body>
 </html>
