@@ -30,20 +30,20 @@ async function loadSeptemberStudents() {
     if (error) throw error;
 
     septApplications = data || [];
-    renderSeptemberTable();
+    renderSeptemberCards();
   } catch (err) {
     console.error("Xatolik:", err);
     alert("Ma'lumotlarni yuklashda xatolik yuz berdi.");
   }
 }
 
-function renderSeptemberTable() {
-  const tbody = document.getElementById('septemberTableBody');
+function renderSeptemberCards() {
+  const content = document.getElementById('septemberContent');
   const emptyState = document.getElementById('emptyState');
   const subtitle = document.getElementById('septemberSubtitle');
 
   if (septApplications.length === 0) {
-    tbody.innerHTML = '';
+    content.innerHTML = '';
     emptyState.style.display = 'block';
     subtitle.innerText = `Jami: 0 ta o'quvchi`;
     return;
@@ -51,6 +51,11 @@ function renderSeptemberTable() {
 
   emptyState.style.display = 'none';
   subtitle.innerText = `Jami: ${septApplications.length} ta o'quvchi`;
+
+  const oldStudents = septApplications.filter(a => a.student_type === 'Eski o\'quvchi');
+  const newStudents = septApplications.filter(a => a.student_type !== 'Eski o\'quvchi');
+
+  let html = '';
 
   const statusMap = {
     'new': 'Yangi',
@@ -60,28 +65,58 @@ function renderSeptemberTable() {
     'rejected': 'Rad etildi'
   };
 
-  tbody.innerHTML = septApplications.map((app, idx) => {
-    const isOld = app.student_type === 'Eski o\'quvchi';
-    const typeBadge = isOld 
-      ? `<span style="display:inline-block; margin-top:4px; font-size:0.75rem; background:rgba(34,197,94,0.1); color:var(--green); padding:2px 8px; border-radius:12px; font-weight:700;"><i class="bi bi-person-hearts"></i> Eski o'quvchi</span>`
-      : `<span style="display:inline-block; margin-top:4px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--blue); padding:2px 8px; border-radius:12px; font-weight:700;"><i class="bi bi-person-badge-fill"></i> Yangi o'quvchi</span>`;
+  const createCard = (app, isOld) => {
+    const typeClass = isOld ? 'type-old' : 'type-new';
+    const typeIcon = isOld ? '<i class="bi bi-person-hearts"></i>' : '<i class="bi bi-person-badge-fill"></i>';
+    const typeLbl = isOld ? 'Eski o\'quvchi' : 'Yangi o\'quvchi';
 
     return `
-    <tr>
-      <td>${idx + 1}</td>
-      <td>
-        <div style="font-weight:800; color:var(--navy-950);">${app.full_name || '—'}</div>
-        ${typeBadge}
-      </td>
-      <td style="font-family:'JetBrains Mono', monospace;">${app.phone || '—'}</td>
-      <td><span style="background:var(--paper); padding:4px 8px; border-radius:6px; font-weight:600; border:1px solid var(--line); font-size:0.85rem;">${app.grade || '—'}</span></td>
-      <td><span style="font-size:0.85rem;">${app.address || '—'}</span></td>
-      <td><span style="font-size:0.85rem; color:var(--muted);">${app.transport_type || '—'}</span></td>
-      <td><span class="badge-status badge-${app.status || 'new'}">${statusMap[app.status] || app.status}</span></td>
-      <td><span style="color:var(--muted); font-size:0.85rem;">${new Date(app.created_at).toLocaleDateString('uz-UZ')}</span></td>
-    </tr>
+      <div class="student-card">
+        <div class="sc-head">
+          <div class="sc-name">${app.full_name || '—'}</div>
+          <div class="sc-type ${typeClass}">${typeIcon} ${typeLbl}</div>
+        </div>
+        <div class="sc-body">
+          <div class="sc-item">
+            <span class="sc-item-label">Telefon</span>
+            <span class="sc-item-value" style="font-family:'JetBrains Mono', monospace;">${app.phone || '—'}</span>
+          </div>
+          <div class="sc-item">
+            <span class="sc-item-label">Sinf</span>
+            <span class="sc-item-value">${app.grade || '—'}</span>
+          </div>
+          <div class="sc-item">
+            <span class="sc-item-label">Qatnov turi</span>
+            <span class="sc-item-value">${app.transport_type || '—'}</span>
+          </div>
+          <div class="sc-item">
+            <span class="sc-item-label">Holat</span>
+            <span class="sc-item-value"><span class="badge-status badge-${app.status || 'new'}" style="margin:0;">${statusMap[app.status] || app.status}</span></span>
+          </div>
+        </div>
+      </div>
     `;
-  }).join('');
+  };
+
+  if (oldStudents.length > 0) {
+    html += `
+      <div class="section-label"><i class="bi bi-person-hearts" style="color:var(--green);"></i> Eski O'quvchilar (${oldStudents.length})</div>
+      <div class="student-grid">
+        ${oldStudents.map(app => createCard(app, true)).join('')}
+      </div>
+    `;
+  }
+
+  if (newStudents.length > 0) {
+    html += `
+      <div class="section-label"><i class="bi bi-person-badge-fill" style="color:var(--blue);"></i> Yangi O'quvchilar (${newStudents.length})</div>
+      <div class="student-grid">
+        ${newStudents.map(app => createCard(app, false)).join('')}
+      </div>
+    `;
+  }
+
+  content.innerHTML = html;
 }
 
 // Export CSV

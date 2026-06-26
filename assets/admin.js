@@ -42,16 +42,16 @@ const addStudentSaveBtn = document.getElementById('addStudentSaveBtn');
 if (addStudentBtn) {
   addStudentBtn.addEventListener('click', () => {
     if (addStudentModal) {
-      addStudentModal.classList.add('active');
-      document.getElementById('modalBackdrop').classList.add('active');
+      addStudentModal.classList.add('show');
+      document.getElementById('modalBackdrop').classList.add('show');
     }
   });
 }
 
 if (addStudentCloseBtn) {
   addStudentCloseBtn.addEventListener('click', () => {
-    if (addStudentModal) addStudentModal.classList.remove('active');
-    document.getElementById('modalBackdrop').classList.remove('active');
+    if (addStudentModal) addStudentModal.classList.remove('show');
+    document.getElementById('modalBackdrop').classList.remove('show');
   });
 }
 
@@ -87,8 +87,8 @@ if (addStudentSaveBtn) {
       
       window.hitsToast("Yangi o'quvchi muvaffaqiyatli qo'shildi!", 'success');
       
-      if (addStudentModal) addStudentModal.classList.remove('active');
-      document.getElementById('modalBackdrop').classList.remove('active');
+      if (addStudentModal) addStudentModal.classList.remove('show');
+      document.getElementById('modalBackdrop').classList.remove('show');
       
       // Formani tozalash
       document.getElementById('addFullName').value = '';
