@@ -341,6 +341,13 @@ async function editApplication(id) {
     {val: 'O\'zi qatnaydi', lbl: 'O\'zi', icon: '<i class="bi bi-person-walking"></i>'}
   ];
 
+  const enrollments = [
+    {val: '', lbl: 'Tanlanmagan', icon: '<i class="bi bi-dash-circle"></i>'},
+    {val: 'Sentyabr', lbl: 'Sentyabr', icon: '<i class="bi bi-calendar-event-fill" style="color:#d97706"></i>'},
+    {val: 'Avgust', lbl: 'Avgust', icon: '<i class="bi bi-sun-fill" style="color:#eab308"></i>'},
+    {val: 'Hozir', lbl: 'Hozir', icon: '<i class="bi bi-lightning-fill" style="color:var(--blue)"></i>'}
+  ];
+
   modalBody.innerHTML = `
     <div style="background:rgba(0,0,0,0.02); padding:14px 16px; border-radius:12px; margin-bottom:16px;">
       <div style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;"><i class="bi bi-info-circle"></i> O'quvchi ma'lumotlarini tahrirlash:</div>
@@ -385,6 +392,18 @@ async function editApplication(id) {
     </div>
 
     <div style="margin-bottom:16px;">
+      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Qachon keladi? (O'qishni boshlash vaqti):</div>
+      <div class="icon-radio-group">
+        ${enrollments.map(e => `
+          <label>
+            <input type="radio" name="editEnrollment" value="${e.val}" class="icon-radio-input" ${app.enrollment_month === e.val || (!app.enrollment_month && e.val === '') ? 'checked' : ''}>
+            <div class="icon-radio-label">${e.icon} ${e.lbl}</div>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
       <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">Qatnov turi:</div>
       <div class="icon-radio-group">
         ${transports.map(t => `
@@ -414,6 +433,7 @@ async function editApplication(id) {
     const newGrade = document.querySelector('input[name="editGrade"]:checked')?.value || '';
     const newAddress = document.getElementById('editAddress')?.value || '';
     const newTransport = document.querySelector('input[name="editTransport"]:checked')?.value || '';
+    const newEnrollment = document.querySelector('input[name="editEnrollment"]:checked')?.value || '';
     const newNotes = document.getElementById('editNotes')?.value || '';
 
     if (supabaseClient) {
@@ -425,7 +445,8 @@ async function editApplication(id) {
           status: newStatus, 
           grade: newGrade, 
           address: newAddress, 
-          transport_type: newTransport, 
+          transport_type: newTransport,
+          enrollment_month: newEnrollment,
           notes: newNotes 
         })
         .eq('id', id);
