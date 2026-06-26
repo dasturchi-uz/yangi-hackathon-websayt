@@ -118,7 +118,7 @@
       </div>
     </div>
 
-    <div class="toolbar" style="margin-bottom:16px;">
+    <div class="toolbar" style="margin-bottom:16px; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
       <div style="position:relative; flex:1 1 220px;">
         <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted);"></i>
         <input type="text" id="searchInput" placeholder="Ism yoki telefon raqami bo‘yicha qidirish..." style="width:100%; padding-left:36px;">
@@ -126,6 +126,7 @@
       <select id="gradeFilter" style="max-width:180px;">
         <option value="">Barcha sinflar</option>
       </select>
+      <button class="btn btn-navy" id="addStudentBtn" style="white-space:nowrap;"><i class="bi bi-person-plus-fill"></i> Yangi o'quvchi</button>
       <span style="color:var(--muted); font-size:.84rem; margin-left:auto;" id="resultCount"></span>
     </div>
 
@@ -181,6 +182,72 @@
       <div id="classesList" style="display:flex; flex-direction:column; gap:8px; max-height:400px; overflow-y:auto;">
         <!-- Dynamic classes -->
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal-custom" id="addStudentModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h5 style="font-weight:800;"><i class="bi bi-person-plus-fill" style="color:var(--navy-600);"></i> Yangi o'quvchi qo'shish</h5>
+      <button class="modal-close" id="addStudentCloseBtn"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body-custom">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">F.I.SH:</label>
+        <input type="text" id="addFullName" placeholder="O'quvchining to'liq ismi..." style="width:100%; border-radius:8px; border:1px solid var(--line); padding:10px 14px; font-size:.95rem; font-weight:600;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Telefon raqami:</label>
+        <input type="text" id="addPhone" placeholder="+998 90 123 45 67" style="width:100%; border-radius:8px; border:1px solid var(--line); padding:10px 14px; font-size:.95rem; font-family:'JetBrains Mono', monospace;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">O'quvchi turi:</label>
+        <div class="icon-radio-group">
+          <label>
+            <input type="radio" name="addStudentType" value="Yangi o'quvchi" class="icon-radio-input" checked>
+            <div class="icon-radio-label"><i class="bi bi-person-badge-fill" style="color:var(--blue)"></i> Yangi o'quvchi</div>
+          </label>
+          <label>
+            <input type="radio" name="addStudentType" value="Eski o'quvchi" class="icon-radio-input">
+            <div class="icon-radio-label"><i class="bi bi-person-hearts" style="color:var(--green)"></i> Eski o'quvchi</div>
+          </label>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Qachon keladi?</label>
+        <div class="icon-radio-group">
+          <label>
+            <input type="radio" name="addEnrollment" value="Sentyabr" class="icon-radio-input">
+            <div class="icon-radio-label"><i class="bi bi-calendar-event-fill" style="color:#d97706"></i> Sentyabr</div>
+          </label>
+          <label>
+            <input type="radio" name="addEnrollment" value="Avgust" class="icon-radio-input">
+            <div class="icon-radio-label"><i class="bi bi-sun-fill" style="color:#eab308"></i> Avgust</div>
+          </label>
+          <label>
+            <input type="radio" name="addEnrollment" value="Hozir" class="icon-radio-input" checked>
+            <div class="icon-radio-label"><i class="bi bi-lightning-fill" style="color:var(--blue)"></i> Hozir</div>
+          </label>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Holati:</label>
+        <div class="icon-radio-group">
+          <label>
+            <input type="radio" name="addStatus" value="new" class="icon-radio-input" checked>
+            <div class="icon-radio-label"><i class="bi bi-star-fill" style="color:var(--blue)"></i> Yangi</div>
+          </label>
+          <label>
+            <input type="radio" name="addStatus" value="accepted" class="icon-radio-input">
+            <div class="icon-radio-label"><i class="bi bi-check-circle-fill" style="color:var(--green)"></i> Qabul qilindi</div>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-navy" id="addStudentSaveBtn" style="width:100%;">Qo'shish</button>
     </div>
   </div>
 </div>

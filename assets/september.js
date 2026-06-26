@@ -60,10 +60,19 @@ function renderSeptemberTable() {
     'rejected': 'Rad etildi'
   };
 
-  tbody.innerHTML = septApplications.map((app, idx) => `
+  tbody.innerHTML = septApplications.map((app, idx) => {
+    const isOld = app.student_type === 'Eski o\'quvchi';
+    const typeBadge = isOld 
+      ? `<span style="display:inline-block; margin-top:4px; font-size:0.75rem; background:rgba(34,197,94,0.1); color:var(--green); padding:2px 8px; border-radius:12px; font-weight:700;"><i class="bi bi-person-hearts"></i> Eski o'quvchi</span>`
+      : `<span style="display:inline-block; margin-top:4px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--blue); padding:2px 8px; border-radius:12px; font-weight:700;"><i class="bi bi-person-badge-fill"></i> Yangi o'quvchi</span>`;
+
+    return `
     <tr>
       <td>${idx + 1}</td>
-      <td><strong>${app.full_name || '—'}</strong></td>
+      <td>
+        <div style="font-weight:800; color:var(--navy-950);">${app.full_name || '—'}</div>
+        ${typeBadge}
+      </td>
       <td style="font-family:'JetBrains Mono', monospace;">${app.phone || '—'}</td>
       <td><span style="background:var(--paper); padding:4px 8px; border-radius:6px; font-weight:600; border:1px solid var(--line); font-size:0.85rem;">${app.grade || '—'}</span></td>
       <td><span style="font-size:0.85rem;">${app.address || '—'}</span></td>
@@ -71,7 +80,8 @@ function renderSeptemberTable() {
       <td><span class="badge-status badge-${app.status || 'new'}">${statusMap[app.status] || app.status}</span></td>
       <td><span style="color:var(--muted); font-size:0.85rem;">${new Date(app.created_at).toLocaleDateString('uz-UZ')}</span></td>
     </tr>
-  `).join('');
+    `;
+  }).join('');
 }
 
 // Export CSV
@@ -81,7 +91,7 @@ document.getElementById('exportSeptBtn')?.addEventListener('click', () => {
     return;
   }
 
-  const headers = ['ID', 'F.I.SH', 'Telefon', 'Sinf', 'Manzil', 'Qatnov', 'Holat', 'Ro\'yxatdan o\'tgan'];
+  const headers = ['ID', 'F.I.SH', 'Turi', 'Telefon', 'Sinf', 'Manzil', 'Qatnov', 'Holat', 'Ro\'yxatdan o\'tgan'];
   const statusMap = {
     'new': 'Yangi',
     'called': 'Gaplashildi',
@@ -93,6 +103,7 @@ document.getElementById('exportSeptBtn')?.addEventListener('click', () => {
   const rows = septApplications.map((app, idx) => [
     idx + 1,
     app.full_name,
+    app.student_type || 'Yangi o\'quvchi',
     app.phone,
     app.grade || '—',
     app.address || '—',

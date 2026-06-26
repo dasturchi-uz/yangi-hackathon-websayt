@@ -33,7 +33,73 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
   }
 
-  // Sahifa yuklanganda sessiyani tekshiramiz
+  // O'quvchi qo'shish mantiqi
+const addStudentBtn = document.getElementById('addStudentBtn');
+const addStudentModal = document.getElementById('addStudentModal');
+const addStudentCloseBtn = document.getElementById('addStudentCloseBtn');
+const addStudentSaveBtn = document.getElementById('addStudentSaveBtn');
+
+if (addStudentBtn) {
+  addStudentBtn.addEventListener('click', () => {
+    if (addStudentModal) {
+      addStudentModal.classList.add('active');
+      document.getElementById('modalBackdrop').classList.add('active');
+    }
+  });
+}
+
+if (addStudentCloseBtn) {
+  addStudentCloseBtn.addEventListener('click', () => {
+    if (addStudentModal) addStudentModal.classList.remove('active');
+    document.getElementById('modalBackdrop').classList.remove('active');
+  });
+}
+
+if (addStudentSaveBtn) {
+  addStudentSaveBtn.addEventListener('click', async () => {
+    const fullName = document.getElementById('addFullName').value.trim();
+    const phone = document.getElementById('addPhone').value.trim();
+    const studentType = document.querySelector('input[name="addStudentType"]:checked').value;
+    const enrollment = document.querySelector('input[name="addEnrollment"]:checked').value;
+    const status = document.querySelector('input[name="addStatus"]:checked').value;
+
+    if (!fullName || !phone) {
+      alert("Ism va Telefon raqamini kiritish majburiy!");
+      return;
+    }
+
+    if (supabaseClient) {
+      const { error } = await supabaseClient
+        .from('applications')
+        .insert([{
+          full_name: fullName,
+          phone: phone,
+          student_type: studentType,
+          enrollment_month: enrollment,
+          status: status
+        }]);
+
+      if (error) {
+        window.hitsToast("Qo'shishda xatolik yuz berdi!", 'danger');
+        console.error(error);
+        return;
+      }
+      
+      window.hitsToast("Yangi o'quvchi muvaffaqiyatli qo'shildi!", 'success');
+      
+      if (addStudentModal) addStudentModal.classList.remove('active');
+      document.getElementById('modalBackdrop').classList.remove('active');
+      
+      // Formani tozalash
+      document.getElementById('addFullName').value = '';
+      document.getElementById('addPhone').value = '';
+      
+      loadApplications();
+    }
+  });
+}
+
+// Sahifa yuklanganda sessiyani tekshiramiz
   if (sessionStorage.getItem('hitAdminLogged') === 'true') {
     if (loginScreen) loginScreen.style.display = 'none';
     if (adminApp) adminApp.style.display = 'block';
@@ -357,6 +423,11 @@ async function editApplication(id) {
     {val: 'Hozir', lbl: 'Hozir', icon: '<i class="bi bi-lightning-fill" style="color:var(--blue)"></i>'}
   ];
 
+  const studentTypes = [
+    {val: 'Yangi o\'quvchi', lbl: 'Yangi o\'quvchi', icon: '<i class="bi bi-person-badge-fill" style="color:var(--blue)"></i>'},
+    {val: 'Eski o\'quvchi', lbl: 'Eski o\'quvchi', icon: '<i class="bi bi-person-hearts" style="color:var(--green)"></i>'}
+  ];
+
   modalBody.innerHTML = `
     <div style="background:rgba(0,0,0,0.02); padding:14px 16px; border-radius:12px; margin-bottom:16px;">
       <div style="font-size:0.85rem; color:var(--muted); margin-bottom:10px;"><i class="bi bi-info-circle"></i> O'quvchi ma'lumotlarini tahrirlash:</div>
@@ -369,6 +440,18 @@ async function editApplication(id) {
           <label style="font-size:0.8rem; font-weight:700; color:var(--muted);">Telefon raqami:</label>
           <input type="text" id="editPhone" value="${app.phone || ''}" style="width:100%; border-radius:8px; border:1px solid var(--line); padding:8px 12px; font-size:.95rem; font-family:'JetBrains Mono', monospace;">
         </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div class="k" style="margin-bottom:6px; font-weight:700; font-size:0.85rem; color:var(--muted);">O'quvchi turi:</div>
+      <div class="icon-radio-group">
+        ${studentTypes.map(st => `
+          <label>
+            <input type="radio" name="editStudentType" value="${st.val}" class="icon-radio-input" ${app.student_type === st.val || (!app.student_type && st.val === 'Yangi o\'quvchi') ? 'checked' : ''}>
+            <div class="icon-radio-label">${st.icon} ${st.lbl}</div>
+          </label>
+        `).join('')}
       </div>
     </div>
 
@@ -443,6 +526,7 @@ async function editApplication(id) {
     const newAddress = document.getElementById('editAddress')?.value || '';
     const newTransport = document.querySelector('input[name="editTransport"]:checked')?.value || '';
     const newEnrollment = document.querySelector('input[name="editEnrollment"]:checked')?.value || '';
+    const newStudentType = document.querySelector('input[name="editStudentType"]:checked')?.value || 'Yangi o\'quvchi';
     const newNotes = document.getElementById('editNotes')?.value || '';
 
     if (supabaseClient) {
@@ -456,6 +540,7 @@ async function editApplication(id) {
           address: newAddress, 
           transport_type: newTransport,
           enrollment_month: newEnrollment,
+          student_type: newStudentType,
           notes: newNotes 
         })
         .eq('id', id);
