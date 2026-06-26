@@ -42,16 +42,14 @@ const addStudentSaveBtn = document.getElementById('addStudentSaveBtn');
 if (addStudentBtn) {
   addStudentBtn.addEventListener('click', () => {
     if (addStudentModal) {
-      addStudentModal.classList.add('show');
-      document.getElementById('modalBackdrop').classList.add('show');
+      $('#addStudentModal').modal('show');
     }
   });
 }
 
 if (addStudentCloseBtn) {
   addStudentCloseBtn.addEventListener('click', () => {
-    if (addStudentModal) addStudentModal.classList.remove('show');
-    document.getElementById('modalBackdrop').classList.remove('show');
+    if (addStudentModal) $('#addStudentModal').modal('hide');
   });
 }
 
@@ -87,8 +85,7 @@ if (addStudentSaveBtn) {
       
       window.hitsToast("Yangi o'quvchi muvaffaqiyatli qo'shildi!", 'success');
       
-      if (addStudentModal) addStudentModal.classList.remove('show');
-      document.getElementById('modalBackdrop').classList.remove('show');
+      if (addStudentModal) $('#addStudentModal').modal('hide');
       
       // Formani tozalash
       document.getElementById('addFullName').value = '';
@@ -156,10 +153,10 @@ if (addStudentSaveBtn) {
   
   if (manageClassesBtn && classesModal) {
     manageClassesBtn.addEventListener('click', () => {
-      classesModal.classList.add('show');
+      $('#classesModal').modal('show');
     });
     classesModalCloseBtn.addEventListener('click', () => {
-      classesModal.classList.remove('show');
+      $('#classesModal').modal('hide');
     });
     addClassBtn.addEventListener('click', addClass);
   }
@@ -561,8 +558,7 @@ async function editApplication(id) {
       }
     }
 
-    modal.classList.remove('show');
-    backdrop.classList.remove('show');
+    $('#detailModal').modal('hide');
     loadApplications();
     window.hitsToast('O\'zgartirildi', 'success');
   };
@@ -571,15 +567,13 @@ async function editApplication(id) {
   const cancelBtn = document.getElementById('modalCancelBtn');
 
   const closeModal = function () {
-    modal.classList.remove('show');
-    backdrop.classList.remove('show');
+    $('#detailModal').modal('hide');
   };
 
   if (closeBtn) closeBtn.onclick = closeModal;
   if (cancelBtn) cancelBtn.onclick = closeModal;
 
-  backdrop.classList.add('show');
-  modal.classList.add('show');
+  $('#detailModal').modal('show');
 }
 
 async function deleteApplication(id) {

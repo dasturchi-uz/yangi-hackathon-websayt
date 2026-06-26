@@ -3,201 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Joriy O'quvchilar | HITS</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>Joriy O'quvchilar | HITS Admin</title>
+
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- AdminLTE Theme style -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<!-- CSV yuklash uchun kutubxona -->
+<!-- PapaParse for CSV Import -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" defer></script>
 <script src="assets/main.js" defer></script>
-
-<style type="text/tailwindcss">
-  @theme {
-    --color-primary: #0f172a;
-    --color-accent: #3b82f6;
-  }
-  body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased;
-    font-family: 'Inter', sans-serif;
-  }
-  
-  /* Modals */
-  .modal-backdrop-custom {
-    @apply fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300;
-  }
-  .modal-backdrop-custom.show {
-    @apply opacity-100 pointer-events-auto;
-  }
-  .modal-custom {
-    @apply fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300 scale-95;
-  }
-  .modal-custom.show {
-    @apply opacity-100 pointer-events-auto scale-100;
-  }
-  .modal-card {
-    @apply bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden border border-slate-200;
-  }
-  .modal-head {
-    @apply flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-white;
-  }
-  .modal-body-custom {
-    @apply p-6 overflow-y-auto bg-slate-50/50 flex flex-col gap-4;
-  }
-  .modal-foot {
-    @apply px-6 py-4 border-t border-slate-100 bg-white flex justify-end gap-3;
-  }
-
-  /* Buttons */
-  .btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-200; }
-  .btn-navy { @apply bg-slate-900 text-white hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20; }
-  .btn-outline { @apply bg-white border border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50; }
-  .action-btn { @apply p-2 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors; }
-
-  /* Accordion */
-  .class-accordion {
-    @apply bg-white rounded-2xl border border-slate-200 mb-4 overflow-hidden shadow-sm transition-all duration-200;
-  }
-  .class-header {
-    @apply px-6 py-4 flex justify-between items-center bg-slate-50 cursor-pointer select-none transition-colors hover:bg-slate-100/50;
-  }
-  .class-title {
-    @apply text-lg font-bold text-slate-900 flex items-center gap-3;
-  }
-  .class-stats {
-    @apply bg-white border border-slate-200 px-3 py-1 rounded-full text-sm font-bold text-slate-500 shadow-sm;
-  }
-  .class-body {
-    @apply hidden border-t border-slate-200;
-  }
-  .class-body.open {
-    @apply block;
-  }
-
-  /* Table styling */
-  .std-table { @apply w-full text-left border-collapse whitespace-nowrap; }
-  .std-table th { @apply bg-white text-slate-500 px-6 py-3 text-xs font-bold uppercase tracking-wider border-b border-slate-200; }
-  .std-table td { @apply px-6 py-4 border-b border-slate-100 text-sm; }
-  .std-table tr:last-child td { @apply border-b-0; }
-  .std-table tbody tr:hover { @apply bg-slate-50/50; }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+<style>
+  .accordion-btn { text-align: left; font-weight: 600; }
+  .table-valign-middle td { vertical-align: middle; }
 </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="hold-transition sidebar-mini layout-fixed">
 
-  <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-slate-200 flex flex-col h-full shrink-0 relative z-20">
-    <div class="p-6 flex items-center gap-3 border-b border-slate-100">
-      <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-200">H</div>
-      <div>
-        <h1 class="font-bold text-slate-900 text-sm tracking-wide">HACKATHON IT</h1>
-        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Dashboard</p>
-      </div>
-    </div>
-    <nav class="p-4 flex flex-col gap-2 flex-1 overflow-y-auto">
-      <a href="admin.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-inbox text-lg"></i> Arizalar ro'yxati</a>
-      <a href="students.html" class="flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-700 rounded-xl font-semibold transition-colors"><i class="bi bi-mortarboard text-lg"></i> Joriy O'quvchilar</a>
-      <a href="september.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-calendar-event text-lg"></i> Sentyabr qabuli</a>
-      <a href="analytics.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-pie-chart text-lg"></i> Hisobotlar</a>
-    </nav>
-    <div class="p-4 border-t border-slate-100">
-      <button id="logoutBtn" class="flex items-center gap-3 px-4 py-3 w-full text-red-600 hover:bg-red-50 rounded-xl font-semibold transition-colors"><i class="bi bi-box-arrow-right text-lg"></i> Tizimdan chiqish</button>
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <button id="logoutBtn" class="btn btn-sm btn-danger"><i class="fas fa-sign-out-alt"></i> Chiqish</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="admin.html" class="brand-link">
+      <span class="brand-text font-weight-light ml-3"><b>HITS</b> Dashboard</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <nav class="mt-4">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="admin.html" class="nav-link">
+              <i class="nav-icon fas fa-inbox"></i>
+              <p>Arizalar ro'yxati</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="students.html" class="nav-link active">
+              <i class="nav-icon fas fa-user-graduate"></i>
+              <p>Joriy o'quvchilar</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="september.html" class="nav-link">
+              <i class="nav-icon fas fa-calendar-alt"></i>
+              <p>Sentyabr qabuli</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="analytics.html" class="nav-link">
+              <i class="nav-icon fas fa-chart-pie"></i>
+              <p>Hisobotlar</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative z-10">
-    
-    <!-- HEADER -->
-    <header class="bg-white border-b border-slate-200 px-8 py-5 flex justify-between items-center shrink-0">
-      <div>
-        <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-          <i class="bi bi-mortarboard-fill text-emerald-600"></i> Joriy O'quvchilar
-        </h2>
-        <div class="text-sm font-semibold text-slate-500 mt-1" id="studentsSubtitle">Ma'lumotlar yuklanmoqda...</div>
-      </div>
-      
-      <div class="flex gap-2 items-center flex-wrap">
-        <button class="btn bg-slate-100 text-slate-700 hover:bg-slate-200" id="downloadTemplateBtn">
-          <i class="bi bi-file-earmark-spreadsheet"></i> Shablon (CSV)
-        </button>
-        <label class="btn bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 cursor-pointer">
-          <i class="bi bi-upload"></i> Excel yuklash
-          <input type="file" id="importCsvInput" accept=".csv" class="hidden">
-        </label>
-        <button class="btn bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100" id="migrateBtn">
-          <i class="bi bi-arrow-down-up"></i> Qabul qilinganlarni olish
-        </button>
-        <button class="btn btn-navy" id="addStdBtn">
-          <i class="bi bi-person-plus-fill"></i> Qo'shish
-        </button>
-      </div>
-    </header>
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Content Header -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2 align-items-center">
+          <div class="col-sm-4">
+            <h1 class="m-0"><i class="fas fa-user-graduate text-success"></i> Joriy O'quvchilar</h1>
+            <p class="text-muted text-sm m-0 mt-1" id="studentsSubtitle">Yuklanmoqda...</p>
+          </div>
+          <div class="col-sm-8 text-right">
+             <button id="downloadTemplateBtn" class="btn btn-sm btn-default mr-1"><i class="fas fa-file-csv"></i> Shablon</button>
+             
+             <label class="btn btn-sm btn-outline-success mr-1 mb-0" style="cursor:pointer;">
+               <i class="fas fa-upload"></i> Excel yuklash
+               <input type="file" id="importCsvInput" accept=".csv" style="display:none;">
+             </label>
 
-    <!-- CONTENT SCROLL -->
-    <div class="flex-1 overflow-y-auto p-8" id="studentsContent">
-      <div class="flex flex-col items-center justify-center h-full text-slate-400">
-        <i class="bi bi-arrow-repeat animate-spin text-4xl mb-4"></i>
-        <p class="font-medium">Yuklanmoqda...</p>
+             <button id="migrateBtn" class="btn btn-sm btn-info mr-1"><i class="fas fa-download"></i> Qabul qilinganlarni olish</button>
+             <button id="addStdBtn" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> O'quvchi qo'shish</button>
+          </div>
+        </div>
       </div>
     </div>
-  </main>
 
-<!-- ===================== MODAL: QO'SHISH / TAHRIRLASH ===================== -->
-<div class="modal-backdrop-custom" id="stdModalBackdrop"></div>
-<div class="modal-custom" id="stdModal">
-  <div class="modal-card">
-    <div class="modal-head">
-      <h5 class="font-extrabold text-lg flex items-center gap-2" id="stdModalTitle"><i class="bi bi-person-fill text-blue-600"></i> O'quvchi qo'shish</h5>
-      <button class="modal-close p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors" id="stdModalCloseBtn"><i class="bi bi-x-lg"></i></button>
-    </div>
-    <div class="modal-body-custom">
-      <input type="hidden" id="stdId">
-      
-      <div>
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">F.I.SH:</label>
-        <input type="text" id="stdFullName" placeholder="O'quvchining ismi..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        
+        <div id="studentsContent">
+          <!-- Spinner -->
+          <div class="text-center p-5">
+            <i class="fas fa-spinner fa-spin fa-3x text-muted mb-3"></i>
+            <p>Ma'lumotlar o'qilmoqda...</p>
+          </div>
+        </div>
+
       </div>
-      
-      <div>
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Sinf:</label>
-        <select id="stdGrade" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
-          <!-- JS to'ldiradi -->
-        </select>
-      </div>
-      
-      <div>
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Telefon raqami:</label>
-        <input type="text" id="stdPhone" placeholder="+998..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none">
-      </div>
-      
-      <div>
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Ota-ona (F.I.SH yoki Ma'lumot):</label>
-        <input type="text" id="stdParent" placeholder="Qo'shimcha ma'lumot..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none">
-      </div>
-      
-      <div>
-        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Qatnov / Yotoqxona:</label>
-        <select id="stdTransport" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none">
-          <option value="">Tanlanmagan</option>
-          <option value="Yotoqxonada turadi">Yotoqxonada turadi</option>
-          <option value="Maktab transportida qatnaydi">Maktab transportida qatnaydi</option>
-          <option value="O'zi qatnaydi">O'zi qatnaydi</option>
-        </select>
-      </div>
-      
-    </div>
-    <div class="modal-foot">
-      <button class="btn btn-navy w-full py-3" id="stdSaveBtn">Saqlash</button>
     </div>
   </div>
 </div>
 
+<!-- ===================== QO'SHISH / TAHRIRLASH MODAL ===================== -->
+<div class="modal fade" id="stdModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <h5 class="modal-title text-white" id="stdModalTitle"><i class="fas fa-user-plus"></i> O'quvchi qo'shish</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="stdId">
+        
+        <div class="form-group">
+          <label>F.I.SH:</label>
+          <input type="text" class="form-control" id="stdFullName" placeholder="To'liq ism">
+        </div>
+        
+        <div class="form-group">
+          <label>Sinf:</label>
+          <select id="stdGrade" class="form-control">
+            <!-- JS to'ldiradi -->
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Telefon raqami:</label>
+          <input type="text" class="form-control" id="stdPhone" placeholder="+998...">
+        </div>
+        
+        <div class="form-group">
+          <label>Ota-ona (F.I.SH yoki Ma'lumot):</label>
+          <input type="text" class="form-control" id="stdParent" placeholder="Qo'shimcha ma'lumot">
+        </div>
+        
+        <div class="form-group">
+          <label>Qatnov turi:</label>
+          <select id="stdTransport" class="form-control">
+            <option value="">Tanlanmagan</option>
+            <option value="Yotoqxonada turadi">Yotoqxonada turadi</option>
+            <option value="Maktab transportida qatnaydi">Maktab transportida qatnaydi</option>
+            <option value="O'zi qatnaydi">O'zi qatnaydi</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Bekor qilish</button>
+        <button type="button" class="btn btn-primary" id="stdSaveBtn">Saqlash</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 <script src="assets/students.js" defer></script>
+
 </body>
 </html>

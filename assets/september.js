@@ -66,32 +66,34 @@ function renderSeptemberCards() {
   };
 
   const createCard = (app, isOld) => {
-    const typeClass = isOld ? 'type-old' : 'type-new';
-    const typeIcon = isOld ? '<i class="bi bi-person-hearts"></i>' : '<i class="bi bi-person-badge-fill"></i>';
-    const typeLbl = isOld ? 'Eski o\'quvchi' : 'Yangi o\'quvchi';
+    const typeLbl = isOld ? '<i class="fas fa-user-check"></i> Eski o\'quvchi' : '<i class="fas fa-user"></i> Yangi o\'quvchi';
+    const cardColor = isOld ? 'card-success' : 'card-primary';
+    const badgeColor = isOld ? 'bg-success' : 'bg-primary';
 
     return `
-      <div class="student-card">
-        <div class="sc-head">
-          <div class="sc-name">${app.full_name || '—'}</div>
-          <div class="sc-type ${typeClass}">${typeIcon} ${typeLbl}</div>
-        </div>
-        <div class="sc-body">
-          <div class="sc-item">
-            <span class="sc-item-label">Telefon</span>
-            <span class="sc-item-value" style="font-family:'JetBrains Mono', monospace;">${app.phone || '—'}</span>
+      <div class="col-md-4 col-sm-6 col-12">
+        <div class="card card-outline ${cardColor}">
+          <div class="card-header">
+            <h3 class="card-title font-weight-bold">${app.full_name || '—'}</h3>
+            <div class="card-tools">
+              <span class="badge ${badgeColor}">${typeLbl}</span>
+            </div>
           </div>
-          <div class="sc-item">
-            <span class="sc-item-label">Sinf</span>
-            <span class="sc-item-value">${app.grade || '—'}</span>
-          </div>
-          <div class="sc-item">
-            <span class="sc-item-label">Qatnov turi</span>
-            <span class="sc-item-value">${app.transport_type || '—'}</span>
-          </div>
-          <div class="sc-item">
-            <span class="sc-item-label">Holat</span>
-            <span class="sc-item-value"><span class="badge-status badge-${app.status || 'new'}" style="margin:0;">${statusMap[app.status] || app.status}</span></span>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <b>Telefon</b> 
+                <span><code>${app.phone || '—'}</code></span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <b>Sinf</b> 
+                <span>${app.grade || '—'}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <b>Qatnov</b> 
+                <span class="text-muted">${app.transport_type || '—'}</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -100,8 +102,8 @@ function renderSeptemberCards() {
 
   if (oldStudents.length > 0) {
     html += `
-      <div class="section-label"><i class="bi bi-person-hearts" style="color:var(--green);"></i> Eski O'quvchilar (${oldStudents.length})</div>
-      <div class="student-grid">
+      <h5 class="mt-4 mb-2"><i class="fas fa-user-check text-success"></i> Eski O'quvchilar (${oldStudents.length})</h5>
+      <div class="row">
         ${oldStudents.map(app => createCard(app, true)).join('')}
       </div>
     `;
@@ -109,8 +111,8 @@ function renderSeptemberCards() {
 
   if (newStudents.length > 0) {
     html += `
-      <div class="section-label"><i class="bi bi-person-badge-fill" style="color:var(--blue);"></i> Yangi O'quvchilar (${newStudents.length})</div>
-      <div class="student-grid">
+      <h5 class="mt-4 mb-2"><i class="fas fa-user text-primary"></i> Yangi O'quvchilar (${newStudents.length})</h5>
+      <div class="row">
         ${newStudents.map(app => createCard(app, false)).join('')}
       </div>
     `;

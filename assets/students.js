@@ -96,14 +96,17 @@ function renderStudents() {
     if (students.length === 0 && grade === 'Sinfi yo\'q') return; // Sinfi yo'qlar bo'lmasa yashirish
     
     html += `
-      <div class="class-accordion">
-        <div class="class-header" onclick="toggleAccordion(this)">
-          <div class="class-title"><i class="bi bi-chevron-down" style="font-size:0.9rem; color:var(--muted); transition:transform 0.2s;"></i> ${grade}</div>
-          <div class="class-stats">${students.length} ta o'quvchi</div>
+      <div class="card card-outline card-primary collapsed-card">
+        <div class="card-header" data-card-widget="collapse" style="cursor:pointer;">
+          <h3 class="card-title font-weight-bold"><i class="fas fa-users text-primary mr-2"></i> ${grade}</h3>
+          <div class="card-tools">
+            <span class="badge badge-primary mr-2">${students.length} ta o'quvchi</span>
+            <button type="button" class="btn btn-tool"><i class="fas fa-plus"></i></button>
+          </div>
         </div>
-        <div class="class-body">
+        <div class="card-body p-0" style="display: none;">
           ${students.length > 0 ? `
-            <table class="std-table">
+            <table class="table table-striped table-valign-middle table-hover m-0">
               <thead>
                 <tr>
                   <th style="width:50px;">#</th>
@@ -111,7 +114,7 @@ function renderStudents() {
                   <th>Telefon</th>
                   <th>Ota-ona</th>
                   <th>Qatnov</th>
-                  <th style="text-align:right;">Amallar</th>
+                  <th class="text-right">Amallar</th>
                 </tr>
               </thead>
               <tbody>
@@ -119,18 +122,18 @@ function renderStudents() {
                   <tr>
                     <td>${idx + 1}</td>
                     <td><strong>${std.full_name}</strong></td>
-                    <td style="font-family:'JetBrains Mono', monospace;">${std.phone || '—'}</td>
+                    <td><code>${std.phone || '—'}</code></td>
                     <td>${std.parent_name || '—'}</td>
-                    <td><span style="font-size:0.85rem; color:var(--muted);">${std.transport_type || '—'}</span></td>
-                    <td style="text-align:right;">
-                      <button class="action-btn" title="O'zgartirish" onclick="editStudent(${std.id})"><i class="bi bi-pencil-square"></i></button>
-                      <button class="action-btn" style="color:var(--red);" title="O'chirish" onclick="deleteStudent(${std.id})"><i class="bi bi-trash3"></i></button>
+                    <td><span class="text-muted text-sm">${std.transport_type || '—'}</span></td>
+                    <td class="text-right">
+                      <button class="btn btn-sm btn-outline-info" title="O'zgartirish" onclick="editStudent(${std.id})"><i class="fas fa-edit"></i></button>
+                      <button class="btn btn-sm btn-outline-danger" title="O'chirish" onclick="deleteStudent(${std.id})"><i class="fas fa-trash-alt"></i></button>
                     </td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
-          ` : `<div style="padding:20px; text-align:center; color:var(--muted); font-size:0.9rem;">Bu sinfda o'quvchilar yo'q</div>`}
+          ` : `<div class="p-4 text-center text-muted">Bu sinfda o'quvchilar yo'q</div>`}
         </div>
       </div>
     `;
@@ -159,16 +162,16 @@ const stdModalBackdrop = document.getElementById('stdModalBackdrop');
 const stdModalTitle = document.getElementById('stdModalTitle');
 
 function openModal(isEdit) {
-  if (stdModal) stdModal.classList.add('show');
-  if (stdModalBackdrop) stdModalBackdrop.classList.add('show');
-  stdModalTitle.innerHTML = isEdit 
-    ? `<i class="bi bi-pencil-square" style="color:var(--navy-600);"></i> O'quvchini tahrirlash` 
-    : `<i class="bi bi-person-plus-fill" style="color:var(--navy-600);"></i> Yangi o'quvchi`;
+  $('#stdModal').modal('show');
+  if (stdModalTitle) {
+    stdModalTitle.innerHTML = isEdit 
+      ? `<i class="fas fa-edit"></i> O'quvchini tahrirlash` 
+      : `<i class="fas fa-user-plus"></i> Yangi o'quvchi`;
+  }
 }
 
 function closeModal() {
-  if (stdModal) stdModal.classList.remove('show');
-  if (stdModalBackdrop) stdModalBackdrop.classList.remove('show');
+  $('#stdModal').modal('hide');
   
   // Clear forms
   document.getElementById('stdId').value = '';

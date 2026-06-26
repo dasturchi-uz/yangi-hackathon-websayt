@@ -3,102 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hisobotlar | HITS</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>Hisobotlar | HITS Admin</title>
+
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- AdminLTE Theme style -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="assets/main.js" defer></script>
-
-<style type="text/tailwindcss">
-  @theme {
-    --color-primary: #0f172a;
-    --color-accent: #3b82f6;
-  }
-  body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased;
-    font-family: 'Inter', sans-serif;
-  }
-
-  /* Cards */
-  .chart-card {
-    @apply bg-white rounded-2xl border border-slate-200 p-6 shadow-sm h-full flex flex-col relative overflow-hidden;
-  }
-  
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-</style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="hold-transition sidebar-mini layout-fixed">
 
-  <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-slate-200 flex flex-col h-full shrink-0 relative z-20">
-    <div class="p-6 flex items-center gap-3 border-b border-slate-100">
-      <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-200">H</div>
-      <div>
-        <h1 class="font-bold text-slate-900 text-sm tracking-wide">HACKATHON IT</h1>
-        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Dashboard</p>
-      </div>
-    </div>
-    <nav class="p-4 flex flex-col gap-2 flex-1 overflow-y-auto">
-      <a href="admin.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-inbox text-lg"></i> Arizalar ro'yxati</a>
-      <a href="students.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-mortarboard text-lg"></i> Joriy O'quvchilar</a>
-      <a href="september.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"><i class="bi bi-calendar-event text-lg"></i> Sentyabr qabuli</a>
-      <a href="analytics.html" class="flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-700 rounded-xl font-semibold transition-colors"><i class="bi bi-pie-chart text-lg"></i> Hisobotlar</a>
-    </nav>
-    <div class="p-4 border-t border-slate-100">
-      <button id="logoutBtn" class="flex items-center gap-3 px-4 py-3 w-full text-red-600 hover:bg-red-50 rounded-xl font-semibold transition-colors"><i class="bi bi-box-arrow-right text-lg"></i> Tizimdan chiqish</button>
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <button id="logoutBtn" class="btn btn-sm btn-danger"><i class="fas fa-sign-out-alt"></i> Chiqish</button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="admin.html" class="brand-link">
+      <span class="brand-text font-weight-light ml-3"><b>HITS</b> Dashboard</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <nav class="mt-4">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="admin.html" class="nav-link">
+              <i class="nav-icon fas fa-inbox"></i>
+              <p>Arizalar ro'yxati</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="students.html" class="nav-link">
+              <i class="nav-icon fas fa-user-graduate"></i>
+              <p>Joriy o'quvchilar</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="september.html" class="nav-link">
+              <i class="nav-icon fas fa-calendar-alt"></i>
+              <p>Sentyabr qabuli</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="analytics.html" class="nav-link active">
+              <i class="nav-icon fas fa-chart-pie"></i>
+              <p>Hisobotlar</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </aside>
 
-  <!-- MAIN CONTENT -->
-  <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 relative z-10">
-    
-    <!-- HEADER -->
-    <header class="bg-white border-b border-slate-200 px-8 py-5 flex justify-between items-center shrink-0">
-      <div>
-        <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-          <i class="bi bi-pie-chart-fill text-indigo-600"></i> Analitika va Hisobotlar
-        </h2>
-        <div class="text-sm font-semibold text-slate-500 mt-1" id="loadingText">Ma'lumotlar tahlil qilinmoqda...</div>
-      </div>
-    </header>
-
-    <!-- CONTENT SCROLL -->
-    <div class="flex-1 overflow-y-auto p-8">
-      
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        
-        <!-- YOTOQXONA / QATNOV -->
-        <div class="chart-card">
-          <h3 class="font-extrabold text-slate-800 mb-2 text-lg"><i class="bi bi-bus-front-fill text-indigo-500 mr-2"></i> Logistika (Transport va Yotoqxona)</h3>
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Faqat qabul qilingan o'quvchilar uchun</p>
-          <div class="flex-1 relative min-h-[250px]">
-            <canvas id="transportChart"></canvas>
-          </div>
-          <div id="transportDetails" class="mt-6 flex justify-between bg-slate-50 border border-slate-100 p-4 rounded-xl text-sm">
-             <!-- JS to'ldiradi -->
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Content Header -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2 align-items-center">
+          <div class="col-sm-6">
+            <h1 class="m-0"><i class="fas fa-chart-pie text-info"></i> Analitika va Hisobotlar</h1>
+            <p class="text-muted text-sm m-0 mt-1" id="loadingText">Ma'lumotlar tahlil qilinmoqda...</p>
           </div>
         </div>
-
-        <!-- SINFLAR BO'YICHA QABUL -->
-        <div class="chart-card">
-          <h3 class="font-extrabold text-slate-800 mb-2 text-lg"><i class="bi bi-bar-chart-fill text-indigo-500 mr-2"></i> Sinflar bo'yicha taqsimot</h3>
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-6">Qabul qilinganlarning sinflardagi ulushi</p>
-          <div class="flex-1 relative min-h-[250px]">
-            <canvas id="gradeChart"></canvas>
-          </div>
-        </div>
-
       </div>
-
     </div>
-  </main>
 
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+          <!-- Transport Chart -->
+          <div class="col-lg-6">
+            <div class="card card-outline card-info">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-bus mr-1"></i> Logistika (Transport/Yotoqxona)</h3>
+              </div>
+              <div class="card-body">
+                <div class="chart">
+                  <canvas id="transportChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+                <div id="transportDetails" class="mt-4 p-3 bg-light rounded text-sm d-flex justify-content-between">
+                   <!-- JS to'ldiradi -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grade Chart -->
+          <div class="col-lg-6">
+            <div class="card card-outline card-primary">
+              <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-chart-bar mr-1"></i> Sinflar bo'yicha taqsimot</h3>
+              </div>
+              <div class="card-body">
+                <div class="chart">
+                  <canvas id="gradeChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 <script src="assets/analytics.js" defer></script>
+
 </body>
 </html>
