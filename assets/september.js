@@ -16,8 +16,8 @@ async function loadSeptemberStudents() {
     return;
   }
   
-  const supabaseUrl = window.ENV_SUPABASE_URL;
-  const supabaseKey = window.ENV_SUPABASE_KEY;
+  const supabaseUrl = window.HITS_CONFIG.SUPABASE_URL;
+  const supabaseKey = window.HITS_CONFIG.SUPABASE_KEY;
   const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
   try {
@@ -117,7 +117,7 @@ document.getElementById('exportSeptBtn')?.addEventListener('click', () => {
 // Kutish va ishga tushirish
 window.addEventListener('DOMContentLoaded', () => {
   const interval = setInterval(() => {
-    if (window.ENV_SUPABASE_URL && window.supabase) {
+    if (window.HITS_CONFIG && window.supabase) {
       clearInterval(interval);
       loadSeptemberStudents();
     }

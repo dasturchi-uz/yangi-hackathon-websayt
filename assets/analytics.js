@@ -18,8 +18,8 @@ async function loadAnalytics() {
   }
   
   // Asosiy js dan muhit o'zgaruvchilarini olish
-  const supabaseUrl = window.ENV_SUPABASE_URL;
-  const supabaseKey = window.ENV_SUPABASE_KEY;
+  const supabaseUrl = window.HITS_CONFIG.SUPABASE_URL;
+  const supabaseKey = window.HITS_CONFIG.SUPABASE_KEY;
   const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
   try {
@@ -111,10 +111,8 @@ function renderAnalytics() {
 
 // Global scriptlar yuklanganidan keyin ishlashi uchun
 window.addEventListener('DOMContentLoaded', () => {
-  // muhit o'zgaruvchilari main.js da bor, u analytics.js dan oldinmi yoki keyinmi yuklanishi aniq emasligi uchun
-  // setTimeout yoki Interval orqali kutamiz. Ammo bu yerda supabase ulanishidan oldin biroz kutish kerak:
   const interval = setInterval(() => {
-    if (window.ENV_SUPABASE_URL && window.supabase) {
+    if (window.HITS_CONFIG && window.supabase) {
       clearInterval(interval);
       loadAnalytics();
     }
