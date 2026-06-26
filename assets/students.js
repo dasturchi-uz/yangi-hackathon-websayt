@@ -151,23 +151,10 @@ function renderStudents() {
   content.innerHTML = html;
 }
 
-window.toggleAccordion = function(el) {
-  const body = el.nextElementSibling;
-  const icon = el.querySelector('.bi-chevron-down');
-  if (body.classList.contains('open')) {
-    body.classList.remove('open');
-    icon.style.transform = 'rotate(0deg)';
-  } else {
-    body.classList.add('open');
-    icon.style.transform = 'rotate(-180deg)';
-  }
-}
-
 // -------------------------------------------------------------
 // CRUD Lojika
 // -------------------------------------------------------------
 const stdModal = document.getElementById('stdModal');
-const stdModalBackdrop = document.getElementById('stdModalBackdrop');
 const stdModalTitle = document.getElementById('stdModalTitle');
 
 function openModal(isEdit) {
@@ -191,7 +178,6 @@ function closeModal() {
   document.getElementById('stdTransport').value = '';
 }
 
-document.getElementById('stdModalCloseBtn')?.addEventListener('click', closeModal);
 document.getElementById('addStdBtn')?.addEventListener('click', () => {
   closeModal(); // to clear
   openModal(false);

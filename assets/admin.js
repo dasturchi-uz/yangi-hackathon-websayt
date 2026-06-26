@@ -120,11 +120,11 @@ if (addStudentSaveBtn) {
     });
   }
 
-  document.querySelectorAll('.stat-card').forEach(function (card) {
+  document.querySelectorAll('.stat-card-custom').forEach(function (card) {
     card.addEventListener('click', function () {
       const filter = this.dataset.filter;
       currentFilter = filter;
-      document.querySelectorAll('.stat-card').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.stat-card-custom').forEach(c => c.classList.remove('active'));
       this.classList.add('active');
       renderTable();
     });
@@ -148,15 +148,10 @@ if (addStudentSaveBtn) {
   // Classes modal logic
   const manageClassesBtn = document.getElementById('manageClassesBtn');
   const classesModal = document.getElementById('classesModal');
-  const classesModalCloseBtn = document.getElementById('classesModalCloseBtn');
   const addClassBtn = document.getElementById('addClassBtn');
-  
   if (manageClassesBtn && classesModal) {
     manageClassesBtn.addEventListener('click', () => {
       $('#classesModal').modal('show');
-    });
-    classesModalCloseBtn.addEventListener('click', () => {
-      $('#classesModal').modal('hide');
     });
     addClassBtn.addEventListener('click', addClass);
   }
@@ -195,7 +190,6 @@ async function loadApplications() {
     allApplications = data || [];
     await loadClasses(); // Fetch classes before render
     updateStatCards();
-    renderClassOverview();
     renderTable();
   } catch (err) {
     console.error('❌ Xato:', err);
@@ -290,39 +284,7 @@ function renderClassesList() {
   `).join('');
 }
 
-function renderClassOverview() {
-  const container = document.getElementById('classOverviewContent');
-  if (!container) return;
-  
-  const stats = {};
-  allApplications.forEach(app => {
-    if (app.status === 'accepted' && app.grade) {
-      if (!stats[app.grade]) stats[app.grade] = 0;
-      stats[app.grade]++;
-    }
-  });
 
-  if (Object.keys(stats).length === 0) {
-    container.innerHTML = '<div style="color:var(--muted); font-size:0.9rem;">Hozircha qabul qilingan o\'quvchilar yo\'q.</div>';
-    return;
-  }
-
-  container.innerHTML = Object.keys(stats).sort().map(className => {
-    const count = stats[className];
-    const max = 20; 
-    const percent = Math.min(100, (count / max) * 100);
-    const colorClass = count >= max ? 'bg-success' : 'bg-primary';
-    return `
-      <div class="progress-group" style="cursor:pointer;" onclick="document.getElementById('gradeFilter').value='${className}'; document.getElementById('gradeFilter').dispatchEvent(new Event('change')); document.getElementById('tableBody').scrollIntoView({behavior:'smooth'})" title="Shu sinf ro'yxatini ko'rish">
-        <span class="progress-text">${className}</span>
-        <span class="float-right"><b>${count}</b>/${max} ${count>=max?'<i class="fas fa-check text-success"></i>':''}</span>
-        <div class="progress progress-sm">
-          <div class="progress-bar ${colorClass}" style="width: ${percent}%"></div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
 
 function renderTable() {
   const searchInput = document.getElementById('searchInput');
@@ -386,7 +348,13 @@ function renderTable() {
     };
 
     return `
-    <tr style="cursor:pointer;" onclick="if(!event.target.closest('button')) editApplication(${app.id})">
+    <tr style="cursor:pointer;" onclick="if(!event.target.closest('button') && !event.target.closest('.custom-checkbox')) editApplication(${app.id})">
+      <td>
+        <div class="custom-control custom-checkbox">
+          <input class="custom-control-input row-checkbox" type="checkbox" id="chk_${app.id}" value="${app.id}" onchange="updateBulkActions()">
+          <label for="chk_${app.id}" class="custom-control-label"></label>
+        </div>
+      </td>
       <td>${idx + 1}</td>
       <td>
         <strong>${app.full_name || '—'}</strong><br>
@@ -403,6 +371,66 @@ function renderTable() {
     </tr>
     `;
   }).join('');
+  updateBulkActions();
+}
+
+// Bulk Actions Logic
+window.updateBulkActions = function() {
+  const checkboxes = document.querySelectorAll('.row-checkbox');
+  const checked = document.querySelectorAll('.row-checkbox:checked');
+  const selectAll = document.getElementById('selectAll');
+  const menu = document.getElementById('bulkActionsMenu');
+  const count = document.getElementById('selectedCount');
+  
+  if (selectAll) selectAll.checked = checkboxes.length > 0 && checkboxes.length === checked.length;
+  
+  if (menu && count) {
+    if (checked.length > 0) {
+      menu.style.display = 'block';
+      count.textContent = checked.length;
+    } else {
+      menu.style.display = 'none';
+      count.textContent = '0';
+    }
+  }
+}
+
+document.getElementById('selectAll')?.addEventListener('change', function(e) {
+  const isChecked = e.target.checked;
+  document.querySelectorAll('.row-checkbox').forEach(chk => {
+    chk.checked = isChecked;
+  });
+  updateBulkActions();
+});
+
+window.bulkUpdateStatus = async function(newStatus) {
+  const checked = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+  if (checked.length === 0) return;
+  if (!confirm(`Haqiqatan ham ${checked.length} ta arizani holatini o'zgartirmoqchimisiz?`)) return;
+
+  try {
+    const { error } = await supabaseClient.from('applications').update({ status: newStatus }).in('id', checked);
+    if (error) throw error;
+    window.hitsToast(`${checked.length} ta ariza muvaffaqiyatli o'zgartirildi`, 'success');
+    loadApplications();
+  } catch (err) {
+    alert("Xatolik: " + err.message);
+  }
+}
+
+window.bulkDelete = async function() {
+  const checked = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+  if (checked.length === 0) return;
+  if (!confirm(`Diqqat! ${checked.length} ta arizani butunlay o'chirib tashlamoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi.`)) return;
+
+  try {
+    const { error } = await supabaseClient.from('applications').delete().in('id', checked);
+    if (error) throw error;
+    window.hitsToast(`${checked.length} ta ariza o'chirildi`, 'success');
+    loadApplications();
+  } catch (err) {
+    alert("Xatolik: " + err.message);
+  }
 }
 
 async function editApplication(id) {
@@ -571,15 +599,7 @@ async function editApplication(id) {
     window.hitsToast('O\'zgartirildi', 'success');
   };
 
-  const closeBtn = document.getElementById('modalCloseBtn');
-  const cancelBtn = document.getElementById('modalCancelBtn');
-
-  const closeModal = function () {
-    $('#detailModal').modal('hide');
-  };
-
-  if (closeBtn) closeBtn.onclick = closeModal;
-  if (cancelBtn) cancelBtn.onclick = closeModal;
+  // Close buttons are handled by data-dismiss="modal" in HTML
 
   $('#detailModal').modal('show');
 }

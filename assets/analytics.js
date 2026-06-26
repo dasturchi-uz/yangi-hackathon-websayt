@@ -117,11 +117,30 @@ function renderCharts() {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  const interval = setInterval(() => {
-    if (window.HITS_CONFIG && window.supabase) {
-      clearInterval(interval);
+document.addEventListener('DOMContentLoaded', function () {
+  if (sessionStorage.getItem('hitAdminLogged') !== 'true') {
+    window.location.href = 'admin.html';
+    return;
+  }
+  const adminApp = document.getElementById('adminApp');
+  if (adminApp) adminApp.style.display = 'block';
+
+  let checkTries = 0;
+  const checkSupa = setInterval(() => {
+    if (window.supabaseClient) {
+      clearInterval(checkSupa);
+      loadAnalytics();
+    } else if (window.supabase && window.HITS_CONFIG) {
+      window.supabaseClient = window.supabase.createClient(window.HITS_CONFIG.SUPABASE_URL, window.HITS_CONFIG.SUPABASE_KEY);
+      clearInterval(checkSupa);
       loadAnalytics();
     }
+    checkTries++;
+    if(checkTries > 50) clearInterval(checkSupa);
   }, 100);
+
+  document.getElementById('logoutBtn')?.addEventListener('click', function () {
+    sessionStorage.removeItem('hitAdminLogged');
+    window.location.href = 'admin.html';
+  });
 });

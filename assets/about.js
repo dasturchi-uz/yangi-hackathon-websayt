@@ -1,18 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const burger = document.getElementById('navBurger');
-  const mobileNav = document.getElementById('navMobile');
-
-  if (burger && mobileNav) {
-    burger.addEventListener('click', function () {
-      mobileNav.classList.toggle('open');
-    });
-
-    mobileNav.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
-        mobileNav.classList.remove('open');
-      });
-    });
-  }
 
   document.querySelectorAll('.tab-toggle button[data-track]').forEach(function (button) {
     button.addEventListener('click', function () {
