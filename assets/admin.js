@@ -374,10 +374,19 @@ function renderTable() {
     'rejected': 'Rad etildi'
   };
 
-  tbody.innerHTML = filtered.map((app, idx) => `
+  tbody.innerHTML = filtered.map((app, idx) => {
+    const isOld = app.student_type === 'Eski o\'quvchi';
+    const typeBadge = isOld 
+      ? `<span style="display:inline-block; margin-top:4px; font-size:0.75rem; background:rgba(34,197,94,0.1); color:var(--green); padding:2px 8px; border-radius:12px; font-weight:700;"><i class="bi bi-person-hearts"></i> Eski o'quvchi</span>`
+      : `<span style="display:inline-block; margin-top:4px; font-size:0.75rem; background:rgba(59,130,246,0.1); color:var(--blue); padding:2px 8px; border-radius:12px; font-weight:700;"><i class="bi bi-person-badge-fill"></i> Yangi o'quvchi</span>`;
+
+    return `
     <tr>
       <td>${idx + 1}</td>
-      <td><strong>${app.full_name || '—'}</strong></td>
+      <td>
+        <div style="font-weight:800; color:var(--navy-950);">${app.full_name || '—'}</div>
+        ${typeBadge}
+      </td>
       <td>${app.phone || '—'}</td>
       <td>${app.grade || '—'}</td>
       <td><span class="badge-status badge-${app.status || 'new'}">${statusMap[app.status] || app.status}</span></td>
@@ -387,7 +396,8 @@ function renderTable() {
         <button class="action-btn" style="color:var(--red);" title="O'chirish" onclick="deleteApplication(${app.id})"><i class="bi bi-trash3"></i></button>
       </td>
     </tr>
-  `).join('');
+    `;
+  }).join('');
 }
 
 async function editApplication(id) {
