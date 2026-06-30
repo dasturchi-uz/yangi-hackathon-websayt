@@ -1,11 +1,11 @@
 // Login tekshiruvi
 if (sessionStorage.getItem('hitAdminLogged') !== 'true') {
-  window.location.href = 'admin.html';
+  window.location.href = 'login.html';
 }
 
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
   sessionStorage.removeItem('hitAdminLogged');
-  window.location.href = 'admin.html';
+  window.location.href = 'login.html';
 });
 
 let currentStudents = [];
@@ -341,4 +341,27 @@ document.getElementById('importCsvInput')?.addEventListener('change', (e) => {
       loadData();
     }
   });
+});
+
+document.getElementById('exportCsvBtn')?.addEventListener('click', () => {
+  if (!currentStudents || currentStudents.length === 0) {
+    if(window.hitsToast) window.hitsToast("Eksport qilish uchun ma'lumot yo'q", 'danger');
+    return;
+  }
+  
+  let csv = "ID,Ism-Familiya,Telefon,Sinf,Ota-ona,Qatnov turi\n";
+  currentStudents.forEach(s => {
+    csv += `"${s.id}","${s.full_name}","${s.phone || ''}","${s.grade || ''}","${s.parent_name || ''}","${s.transport_type || ''}"\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'joriy_oquvchilar.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  if(window.hitsToast) window.hitsToast("CSV yuklab olingan", 'success');
 });

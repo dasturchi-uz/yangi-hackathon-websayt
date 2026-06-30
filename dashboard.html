@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sentyabr qabuli | HITS Admin</title>
+  <title>Bosh Sahifa | HITS Admin</title>
 
   <link rel="icon" href="assets/logo.png">
   
@@ -15,13 +15,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="assets/style.css">
-
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="assets/main.js" defer></script>
-  <style>
-    .stat-card-custom { cursor: pointer; transition: all 0.2s; }
-    .stat-card-custom.active { border: 2px solid var(--primary); background-color: #f8f9fa; }
-  </style>
+  <script src="assets/dashboard.js" defer></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 
@@ -56,7 +54,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
           
           <li class="nav-item">
-            <a href="dashboard.html" class="nav-link">
+            <a href="dashboard.html" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt text-white"></i>
               <p>Bosh Sahifa</p>
             </a>
@@ -77,7 +75,7 @@
           </li>
 
           <li class="nav-item">
-            <a href="september.html" class="nav-link active">
+            <a href="september.html" class="nav-link">
               <i class="nav-icon fas fa-leaf text-white"></i>
               <p>Sentyabr qabuli</p>
             </a>
@@ -101,13 +99,9 @@
     <!-- Content Header -->
     <div class="content-header">
       <div class="container-fluid">
-        <div class="row mb-2 align-items-center">
+        <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0"><i class="fas fa-calendar-alt text-warning"></i> Sentyabr qabuli ro'yxati</h1>
-            <p class="text-muted text-sm m-0 mt-1" id="septemberSubtitle">Yuklanmoqda...</p>
-          </div>
-          <div class="col-sm-6 text-right">
-             <button id="exportSeptBtn" class="btn btn-sm btn-success"><i class="fas fa-file-excel"></i> Excelga saqlash</button>
+            <h1 class="m-0" style="font-family:'Sora', sans-serif; font-weight:700;">Umumiy Boshqaruv Paneli</h1>
           </div>
         </div>
       </div>
@@ -117,31 +111,88 @@
     <div class="content">
       <div class="container-fluid">
         
-        <div id="septemberContent">
-          <!-- Spinner -->
-          <div class="text-center p-5">
-            <i class="fas fa-spinner fa-spin fa-3x text-muted mb-3"></i>
-            <p>Ma'lumotlar o'qilmoqda...</p>
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3 id="dashTotalStudents">0</h3>
+                <p>Joriy o'quvchilar</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-user-graduate"></i>
+              </div>
+              <a href="students.html" class="small-box-footer">Batafsil <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3 id="dashTotalApps">0</h3>
+                <p>Jami arizalar</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-envelope-open-text"></i>
+              </div>
+              <a href="admin.html" class="small-box-footer">Batafsil <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3 id="dashTotalNewApps">0</h3>
+                <p>Yangi arizalar (Kutmoqda)</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              <a href="admin.html" class="small-box-footer">Batafsil <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          
+          <div class="col-lg-3 col-6">
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3 id="dashTotalClasses">0</h3>
+                <p>Sinflar soni</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-chalkboard-teacher"></i>
+              </div>
+              <a href="settings.html" class="small-box-footer">Batafsil <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
           </div>
         </div>
-        
-        <!-- Empty State -->
-        <div id="emptyState" class="text-center p-5" style="display:none; margin-top:50px;">
-          <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-          <h5>Hozircha hech kim yo'q</h5>
-          <p class="text-muted">Sentyabr oyida keladigan o'quvchilar ushbu ro'yxatda paydo bo'ladi.</p>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h3 class="card-title">Sinflar bo'yicha o'quvchilar soni</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="classesChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="card card-success card-outline">
+              <div class="card-header">
+                <h3 class="card-title">Arizalar holati</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="appsChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
     </div>
   </div>
 </div>
-
-<!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-<script src="assets/september.js" defer></script>
 
 </body>
 </html>

@@ -11,27 +11,14 @@ if (window.supabase && window.HITS_CONFIG) {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
-  const loginScreen = document.getElementById('loginScreen');
-  const adminApp = document.getElementById('adminApp');
-  const loginBtn = document.getElementById('loginBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const loginError = document.getElementById('loginError');
-  const passwordInput = document.getElementById('adminPasswordInput');
-
-  function handleLogin() {
-    if (!passwordInput) return;
-    const pwd = passwordInput.value.trim();
-
-    if (pwd === window.HITS_CONFIG.ADMIN_PASSWORD) {
-      sessionStorage.setItem('hitAdminLogged', 'true');
-      loginScreen.style.display = 'none';
-      adminApp.style.display = 'block';
-      if (loginError) loginError.textContent = '';
-      loadApplications();
-    } else {
-      if (loginError) loginError.textContent = 'Xato parol. Iltimos qayta urinib ko\'ring.';
-    }
+  if (sessionStorage.getItem('hitAdminLogged') !== 'true') {
+    window.location.href = 'login.html';
+    return;
   }
+  
+  const adminApp = document.getElementById('adminApp');
+  if (adminApp) adminApp.style.display = 'block';
+  loadApplications();
 
   // O'quvchi qo'shish mantiqi
 const addStudentBtn = document.getElementById('addStudentBtn');
@@ -96,27 +83,11 @@ if (addStudentSaveBtn) {
   });
 }
 
-// Sahifa yuklanganda sessiyani tekshiramiz
-  if (sessionStorage.getItem('hitAdminLogged') === 'true') {
-    if (loginScreen) loginScreen.style.display = 'none';
-    if (adminApp) adminApp.style.display = 'block';
-    loadApplications();
-  }
-
-  if (loginBtn && loginScreen && adminApp) {
-    loginBtn.addEventListener('click', handleLogin);
-    passwordInput.addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') handleLogin();
-    });
-  }
-
-  if (logoutBtn && loginScreen && adminApp) {
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
     logoutBtn.addEventListener('click', function () {
       sessionStorage.removeItem('hitAdminLogged');
-      adminApp.style.display = 'none';
-      loginScreen.style.display = 'flex';
-      if (passwordInput) passwordInput.value = '';
-      allApplications = [];
+      window.location.href = 'login.html';
     });
   }
 

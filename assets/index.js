@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const secretAdminLock = document.getElementById('secretAdminLock');
   if (secretAdminLock) {
     secretAdminLock.addEventListener('click', function () {
-      window.location.href = 'admin.html';
+      window.location.href = 'login.html';
     });
   }
 });

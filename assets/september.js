@@ -1,11 +1,11 @@
 // Login tekshiruvi
 if (sessionStorage.getItem('hitAdminLogged') !== 'true') {
-  window.location.href = 'admin.html';
+  window.location.href = 'login.html';
 }
 
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
   sessionStorage.removeItem('hitAdminLogged');
-  window.location.href = 'admin.html';
+  window.location.href = 'login.html';
 });
 
 let septApplications = [];

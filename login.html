@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tizimga kirish | HITS Admin</title>
+
+  <link rel="icon" href="assets/logo.png">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Theme style (AdminLTE) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="assets/style.css">
+  
+  <style>
+    body {
+      font-family: 'Manrope', sans-serif;
+      background: #f4f6f9;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-box {
+      width: 400px;
+      max-width: 90%;
+    }
+    .login-logo {
+      font-family: 'Sora', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .login-logo img {
+      width: 50px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .card {
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: none;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      border-radius: 8px;
+    }
+    .btn-primary:hover {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+    .input-group-text {
+      border-radius: 0 8px 8px 0;
+    }
+    .form-control {
+      border-radius: 8px 0 0 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-box text-center">
+  <div class="login-logo">
+    <img src="assets/logo1.png" alt="HITS Logo">
+    <span><b>HITS</b> ADMIN</span>
+  </div>
+  
+  <div class="card">
+    <div class="card-body login-card-body rounded">
+      <p class="login-box-msg mb-4">Boshqaruv paneliga kirish uchun parolni kiriting</p>
+
+      <form id="loginForm">
+        <div class="input-group mb-3">
+          <input type="password" id="passwordInput" class="form-control" placeholder="Maxfiy parol" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock text-muted"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary btn-block p-2"><b>Tizimga kirish</b></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const pass = document.getElementById('passwordInput').value;
+    if (pass === 'rishton01') {
+      sessionStorage.setItem('hitAdminLogged', 'true');
+      window.location.href = 'dashboard.html';
+    } else {
+      alert("Noto'g'ri parol!");
+      document.getElementById('passwordInput').value = '';
+    }
+  });
+
+  // Agar oldin kirgan bo'lsa, to'g'ridan-to'g'ri o'tkazish
+  if (sessionStorage.getItem('hitAdminLogged') === 'true') {
+    window.location.href = 'dashboard.html';
+  }
+</script>
+
+</body>
+</html>
